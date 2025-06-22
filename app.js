@@ -1,3 +1,21 @@
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const splashScreen = document.getElementById('splashScreen');
+        const loginForm = document.getElementById('loginForm');
+
+        if (splashScreen) {
+            splashScreen.style.opacity = '0';
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 500); // Fading out animation
+        }
+        
+        if (loginForm) {
+            loginForm.classList.remove('hidden');
+        }
+    }, 2000); // 2 seconds
+});
+
 // 폼 전환
 function showSignupForm() {
     document.getElementById('loginForm').classList.add('hidden');
@@ -116,15 +134,45 @@ signupForm?.addEventListener('submit', function(e) {
     
     if (password !== confirmPassword) {
         showLoading(false);
-        showNotification('비밀번호가 일치하지 않습니다.', 'error');
+        document.getElementById('password-error-message').textContent = '비밀번호가 일치하지 않습니다.';
         return;
     }
-    // 로컬스토리지에 저장 (실제 서비스에서는 서버로 전송)
-    localStorage.setItem('user', JSON.stringify({ name, password }));
+
+    // 로컬스토리지에서 사용자 목록 가져오기
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    // 아이디 중복 확인
+    if (users.some(user => user.name === name)) {
+        showLoading(false);
+        showNotification('이미 사용 중인 아이디입니다.', 'error');
+        return;
+    }
+
+    // 새 사용자 추가 후 로컬스토리지에 저장
+    users.push({ name, password });
+    localStorage.setItem('users', JSON.stringify(users));
+
     showLoading(false);
     showNotification('회원가입이 완료되었습니다! 로그인 해주세요.', 'success');
     showLoginForm();
+    document.getElementById('signupFormElement').reset();
 });
+
+// 비밀번호 일치 실시간 확인
+const passwordInput = document.getElementById('signupPassword');
+const confirmPasswordInput = document.getElementById('signupConfirmPassword');
+const passwordErrorMessage = document.getElementById('password-error-message');
+
+function validatePasswords() {
+    if (passwordInput.value !== confirmPasswordInput.value && confirmPasswordInput.value) {
+        passwordErrorMessage.textContent = '비밀번호가 일치하지 않습니다.';
+    } else {
+        passwordErrorMessage.textContent = '';
+    }
+}
+
+passwordInput?.addEventListener('input', validatePasswords);
+confirmPasswordInput?.addEventListener('input', validatePasswords);
 
 // 홈 화면 표시
 function showHomeScreen(userName) {
@@ -150,8 +198,11 @@ loginForm?.addEventListener('submit', function(e) {
     showLoading(true);
     const name = document.getElementById('loginName').value;
     const password = document.getElementById('loginPassword').value;
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.name === name && user.password === password) {
+    
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.name === name && u.password === password);
+
+    if (user) {
         showLoading(false);
         showHomeScreen(name);
     } else {
