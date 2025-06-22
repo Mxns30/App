@@ -506,7 +506,7 @@ input:focus,
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgb(65, 201, 163) 0%, #28987a 100%);
+    background: linear-gradient(to bottom, #30D6A3, #5ED381);
     z-index: 9999;
     transition: opacity 0.5s ease-out;
 }
