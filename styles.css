@@ -129,7 +129,7 @@ body {
 }
 
 .form-group input:invalid {
-    border-color: var(--error-color);
+    border-color: var(--primary-color);
 }
 
 .input-help {
@@ -176,7 +176,6 @@ body {
     font-size: 1.25rem;
     opacity: 0.6;
 }
-
 
 /* 폼 옵션 */
 .form-options {
@@ -469,11 +468,19 @@ input:focus,
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: linear-gradient(to bottom, #30D6A3, #5ED381);
     z-index: 9999;
     transition: opacity 0.5s ease-out;
+}
+
+#splashScreen p {
+    font-size: 1.5rem;
+    color: #000000;
+    animation: fadeIn 1s ease-in-out;
+    margin-bottom: 0.5rem;
 }
 
 #splashScreen h1 {
