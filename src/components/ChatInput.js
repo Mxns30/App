@@ -9,12 +9,22 @@ const InputContainer = styled.div`
   padding: 12px 8px 8px 8px;
   background: #fff;
   border-top: 1px solid #eee;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 `;
-const Plus = styled.div`
+const Plus = styled.button`
   font-size: 24px;
   color: #bbb;
   margin-right: 8px;
   cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 const Input = styled.input`
   flex: 1;
@@ -27,13 +37,34 @@ const Input = styled.input`
   outline: none;
 `;
 const SendBtn = styled.button`
-  display: none;
+  background: #4BE18A;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
 `;
 const BottomMenu = styled.div`
   display: flex;
   justify-content: center;
   gap: 24px;
   margin-top: 8px;
+  padding: 8px 0;
+  background: #fff;
+  border-top: 1px solid #eee;
+  animation: slideUp 0.2s;
+  flex-shrink: 0;
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 `;
 const MenuBtn = styled.button`
   display: flex;
@@ -60,6 +91,7 @@ const MenuLabel = styled.div`
 
 function ChatInput({ onSend, onSendImage, onDealComplete }) {
   const [value, setValue] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
   const fileInputRef = useRef();
 
   const handleSend = (e) => {
@@ -69,59 +101,94 @@ function ChatInput({ onSend, onSendImage, onDealComplete }) {
       setValue('');
     }
   };
+  
   const handleAlbumClick = () => {
     fileInputRef.current.click();
   };
+  
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const storageRef = ref(storage, `chat-images/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      onSendImage(url);
+      try {
+        console.log('이미지 파일 선택됨:', file.name);
+        
+        // FileReader를 사용해 base64로 변환
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64Image = reader.result;
+          console.log('이미지를 base64로 변환 완료');
+          onSendImage(base64Image);
+          console.log('onSendImage 호출 완료');
+        };
+        reader.readAsDataURL(file);
+        
+      } catch (error) {
+        console.error('이미지 처리 실패:', error);
+        alert('이미지 처리에 실패했습니다.');
+      }
     }
     e.target.value = '';
   };
+
+  const handlePlusClick = () => {
+    const newShowMenu = !showMenu;
+    setShowMenu(newShowMenu);
+    
+    // 메뉴가 나타날 때 화면을 아래로 스크롤
+    if (newShowMenu) {
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+    }
+  };
+
+  const handleInputClick = () => {
+    if (showMenu) {
+      setShowMenu(false);
+    }
+  };
+
   return (
     <div>
       <InputContainer>
-        <Plus>+</Plus>
+        <Plus type="button" onClick={handlePlusClick}>+</Plus>
         <form onSubmit={handleSend} style={{ flex: 1, display: 'flex' }}>
           <Input
             type="text"
-            placeholder="메시지 보내기"
+            placeholder="메시지를 입력하세요"
             value={value}
             onChange={e => setValue(e.target.value)}
+            onClick={handleInputClick}
           />
-          <SendBtn type="submit">전송</SendBtn>
+          <SendBtn type="submit">🐾</SendBtn>
         </form>
-        <MenuBtn onClick={onDealComplete}>
-          <MenuIcon bg="#4BE18A">
-            <span role="img" aria-label="paw" style={{ fontSize: 28 }}>🐾</span>
-          </MenuIcon>
-        </MenuBtn>
       </InputContainer>
-      <BottomMenu>
-        <MenuBtn onClick={handleAlbumClick}>
-          <MenuIcon bg="#FFB07B">
-            <span role="img" aria-label="album" style={{ fontSize: 28 }}>🖼️</span>
-          </MenuIcon>
-          <MenuLabel>앨범</MenuLabel>
-        </MenuBtn>
-        <input
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          ref={fileInputRef}
-          onChange={handleFileChange}
-        />
-        <MenuBtn onClick={onDealComplete}>
-          <MenuIcon bg="#4BE18A">
-            <span role="img" aria-label="paw" style={{ fontSize: 28 }}>🐾</span>
-          </MenuIcon>
-          <MenuLabel>거래완료</MenuLabel>
-        </MenuBtn>
-      </BottomMenu>
+      {showMenu && (
+        <BottomMenu>
+          <MenuBtn onClick={handleAlbumClick}>
+            <MenuIcon bg="#FFB07B">
+              <span role="img" aria-label="album" style={{ fontSize: 28 }}>🖼️</span>
+            </MenuIcon>
+            <MenuLabel>앨범</MenuLabel>
+          </MenuBtn>
+          <MenuBtn onClick={onDealComplete}>
+            <MenuIcon bg="#4BE18A">
+              <span role="img" aria-label="paw" style={{ fontSize: 28 }}>🐾</span>
+            </MenuIcon>
+            <MenuLabel>거래완료</MenuLabel>
+          </MenuBtn>
+        </BottomMenu>
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        ref={fileInputRef}
+        onChange={handleFileChange}
+      />
     </div>
   );
 }
