@@ -1,0 +1,25 @@
+.calendar-pwa-floating-action-button {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #8DC5A7;
+    transition: all 0.2s ease-in-out;
+    z-index: 100;
+}
+
+.calendar-pwa-floating-action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+} 
