@@ -45,13 +45,20 @@ const Button = styled.button`
   }
 `;
 
-function DealCompleteModal({ onClose }) {
+function DealCompleteModal({ onClose, onDealComplete }) {
+  const handleYesClick = () => {
+    if (onDealComplete) {
+      onDealComplete();
+    }
+    onClose();
+  };
+
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={e => e.stopPropagation()}>
         <ModalTitle>거래를 완료하시겠습니까?</ModalTitle>
         <ButtonContainer>
-          <Button isYes={true}>Yes</Button>
+          <Button isYes={true} onClick={handleYesClick}>Yes</Button>
           <Button isYes={false} onClick={onClose}>No</Button>
         </ButtonContainer>
       </ModalContent>

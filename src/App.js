@@ -61,6 +61,15 @@ const MessageText = styled.span`
   word-break: break-word;
 `;
 
+const DealCompleteText = styled.span`
+  font-size: 12px;
+  color: #666;
+  text-decoration: underline;
+  display: block;
+  text-align: center;
+  margin: 8px 0;
+`;
+
 const MessageImage = styled.img`
   max-width: 200px;
   border-radius: 8px;
@@ -141,7 +150,7 @@ export default function App() {
   useEffect(() => {
     socket.on('chat message', (msg) => {
       // Firebase에서 메시지가 이미 저장되어 있으므로, 
-      // onSnapshot에서 자동으로 업데이트될 것입니다.
+      // onSnapshot에서 자동으로 업데이트
       console.log('메시지 수신:', msg);
     });
 
@@ -239,11 +248,28 @@ export default function App() {
   };
 
   // 거래완료 확인
-  const handleDealConfirm = () => {
+  const handleDealConfirm = async () => {
     setShowDealModal(false);
-    setTimeout(() => {
+    
+    try {
+      // 거래완료 메시지를 Firebase에 저장
+      const dealCompleteMsg = {
+        text: 'cloud1234님이 [거래완료]를 눌렀어요!',
+        time: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
+        type: "dealComplete",
+        timestamp: new Date(),
+        userId: userId
+      };
+      
+      await addDoc(collection(db, "messages"), dealCompleteMsg);
+      
+      setTimeout(() => {
+        alert('거래가 완료되었습니다!');
+      }, 100);
+    } catch (error) {
+      console.error('거래완료 메시지 저장 중 에러:', error);
       alert('거래가 완료되었습니다!');
-    }, 100);
+    }
   };
 
   // 거래완료 취소
@@ -257,7 +283,9 @@ export default function App() {
       <MessageContainer>
         {messages.map(msg => (
           <MessageItem key={msg.id} isMe={msg.isMe}>
-            {msg.type === 'text' ? (
+            {msg.type === 'dealComplete' ? (
+              <DealCompleteText>{msg.text}</DealCompleteText>
+            ) : msg.type === 'text' ? (
               <MessageText isMe={msg.isMe}>{msg.text}</MessageText>
             ) : (
               <MessageImage src={msg.image} alt="전송된 이미지" />

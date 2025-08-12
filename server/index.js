@@ -2,31 +2,14 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
-require('dotenv').config();
 
 const app = express();
-
-// CORS 설정
-const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:3000',
-  'https://chat-test-react-79eac.web.app'  // Firebase 호스팅 URL
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS 정책에 의해 차단되었습니다.'));
-    }
-  },
-  credentials: true
-}));
+app.use(cors());
 
 const server = http.createServer(app);
 const io = new Server(server, { 
   cors: { 
-    origin: allowedOrigins,
+    origin: ["http://localhost:3000", "https://chat-test-react-79eac.web.app"],
     methods: ["GET", "POST"],
     credentials: true
   },
@@ -60,5 +43,4 @@ io.on("connection", (socket) => {
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Socket server running on port ${PORT}`);
-  console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
 });

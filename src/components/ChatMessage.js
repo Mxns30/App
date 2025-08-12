@@ -22,6 +22,14 @@ const MessageText = styled.p`
   color: #333;
 `;
 
+const DealCompleteText = styled.p`
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  text-decoration: underline;
+  text-align: center;
+`;
+
 const MessageImage = styled.img`
   max-width: 200px;
   max-height: 200px;
@@ -36,7 +44,16 @@ const TimeText = styled.span`
   display: block;
 `;
 
-function ChatMessage({ isMine, message, imageUrl, time }) {
+function ChatMessage({ isMine, message, imageUrl, time, isDealComplete }) {
+  if (isDealComplete) {
+    return (
+      <MessageContainer isMine={false}>
+        <DealCompleteText>{message}</DealCompleteText>
+        <TimeText>{time}</TimeText>
+      </MessageContainer>
+    );
+  }
+
   return (
     <MessageContainer isMine={isMine}>
       <MessageBubble isMine={isMine}>

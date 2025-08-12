@@ -83,6 +83,19 @@ function ChatRoom() {
     }
   };
 
+  const handleDealComplete = () => {
+    const dealCompleteMessage = {
+      text: 'cloud1234님이 [거래완료]를 눌렀어요!',
+      isMine: false,
+      time: new Date().toLocaleTimeString('ko-KR', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }),
+      isDealComplete: true
+    };
+    setMessages(prev => [...prev, dealCompleteMessage]);
+  };
+
   return (
     <ChatRoomContainer>
       <Header>
@@ -98,6 +111,7 @@ function ChatRoom() {
             isMine={msg.isMine}
             message={msg.text}
             time={msg.time}
+            isDealComplete={msg.isDealComplete}
           />
         ))}
       </MessageContainer>
@@ -108,6 +122,7 @@ function ChatRoom() {
       {showDealModal && (
         <DealCompleteModal 
           onClose={() => setShowDealModal(false)}
+          onDealComplete={handleDealComplete}
         />
       )}
     </ChatRoomContainer>
