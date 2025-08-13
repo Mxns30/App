@@ -221,16 +221,7 @@ function ChatMessageList({ messages }) {
                 <Time>{msg.time}</Time>
               </MessageContent>
               
-              {/* 내 프로필 (내 메시지일 때만 표시) */}
-              {isMe && (
-                <ProfileImage 
-                  profileImage={null} 
-                  style={{ backgroundColor: profileColor }}
-                  onClick={() => handleProfileClick(msg.userId)}
-                >
-                  {userName.slice(0, 2)}
-                </ProfileImage>
-              )}
+              {/* 내 프로필 제거 - 오른쪽에는 프로필 없음 */}
             </MessageRow>
           );
         })}
