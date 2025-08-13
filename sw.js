@@ -2,8 +2,8 @@ const CACHE_NAME = 'calendar-v1';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/styles.css',
-    '/app.js',
+    '/static/js/bundle.js',
+    '/static/css/main.css',
     '/manifest.json'
 ];
 
