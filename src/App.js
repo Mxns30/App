@@ -1,21 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom';
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import io from 'socket.io-client';
 import ChatInput from './components/ChatInput';
+import ChatMessageList from './components/ChatMessageList';
+import DealCompleteModal from './components/DealCompleteModal';
+import { v4 as uuidv4 } from 'uuid';
 
 const SOCKET_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://chat-test-react-79eac.web.app'  // Firebase 호스팅 URL
+  ? 'http://localhost:3001'  // 임시로 로컬 서버 사용
   : 'http://localhost:3001';
-
-const socket = io(SOCKET_URL, {
-  reconnection: true,
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-  timeout: 10000,
-  transports: ['websocket', 'polling']
-});
 
 // 전체 컨테이너
 const AppContainer = styled.div`
@@ -36,106 +32,185 @@ const Header = styled.div`
   font-size: 20px;
   font-weight: bold;
   flex-shrink: 0;
-`;
-
-// 메시지 영역
-const MessageContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  background: #f5f5f5;
-`;
-
-// 메시지 스타일
-const MessageItem = styled.div`
-  margin: 8px 0;
-  text-align: ${props => props.isMe ? 'right' : 'left'};
-`;
-
-const MessageText = styled.span`
-  background: ${props => props.isMe ? '#E6FAEC' : '#fff'};
-  padding: 8px 12px;
-  border-radius: 12px;
-  display: inline-block;
-  max-width: 70%;
-  word-break: break-word;
-`;
-
-const DealCompleteText = styled.span`
-  font-size: 12px;
-  color: #666;
-  text-decoration: underline;
-  display: block;
-  text-align: center;
-  margin: 8px 0;
-`;
-
-const MessageImage = styled.img`
-  max-width: 200px;
-  border-radius: 8px;
-  display: block;
-  margin: 4px 0;
-`;
-
-const MessageTime = styled.div`
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 4px;
-`;
-
-// 모달 스타일 컴포넌트
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 300px;
-  text-align: center;
-`;
-
-const ModalTitle = styled.h2`
-  margin-bottom: 20px;
-  font-size: 18px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
   justify-content: space-between;
-  gap: 10px;
 `;
 
-const Button = styled.button`
-  flex: 1;
-  padding: 10px;
+const BackButton = styled.button`
+  background: none;
   border: none;
-  border-radius: 5px;
-  background-color: ${props => props.isYes ? '#E6FAEC' : '#f5f5f5'};
+  font-size: 16px;
+  cursor: pointer;
+  color: #007bff;
+`;
+
+// 버튼 스타일
+const Button = styled.button`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
   cursor: pointer;
   font-size: 14px;
   
   &:hover {
-    background-color: ${props => props.isYes ? '#d4f5dc' : '#e0e0e0'};
+    background-color: #0056b3;
   }
 `;
 
-export default function App() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+// 홈페이지 컴포넌트
+const HomePage = () => {
+  const navigate = useNavigate();
   const [userId] = useState(() => localStorage.getItem('userId') || Date.now().toString());
-  const [isConnected] = useState(socket.connected);
+  const [chatRooms, setChatRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!localStorage.getItem('userId')) {
+      localStorage.setItem('userId', userId);
+    }
+  }, [userId]);
+
+  // 사용자의 채팅방 목록 불러오기
+  useEffect(() => {
+    const loadChatRooms = async () => {
+      try {
+        const roomsRef = collection(db, "chatRooms");
+        const q = query(roomsRef, orderBy("createdAt", "desc"));
+        
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const rooms = snapshot.docs
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }))
+            .filter(room => room.participants && room.participants.includes(userId))
+            .slice(0, 10); // 최근 10개만 표시
+          
+          setChatRooms(rooms);
+          setLoading(false);
+        });
+
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('채팅방 목록 불러오기 실패:', error);
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      loadChatRooms();
+    }
+  }, [userId]);
+
+  const createNewChat = () => {
+    const roomId = uuidv4();
+    navigate(`/chat/${roomId}`);
+  };
+
+  const joinExistingChat = () => {
+    const roomId = prompt('채팅방 ID를 입력하세요:');
+    if (roomId) {
+      navigate(`/chat/${roomId}`);
+    }
+  };
+
+  // 게시물에서 채팅 시작 (새로 추가)
+  const startChatFromPost = (postId, sellerId) => {
+    // 게시물 ID와 판매자 ID로 고유한 채팅방 ID 생성
+    const roomId = generateRoomIdFromPost(postId, sellerId, userId);
+    navigate(`/chat/${roomId}?postId=${postId}&sellerId=${sellerId}`);
+  };
+
+  // 게시물 기반 채팅방 ID 생성 함수
+  const generateRoomIdFromPost = (postId, sellerId, buyerId) => {
+    // 정렬하여 항상 같은 순서로 ID 생성
+    const sortedIds = [sellerId, buyerId].sort();
+    return `${postId}_${sortedIds[0]}_${sortedIds[1]}`;
+  };
+
+  const formatTime = (timestamp) => {
+    if (!timestamp) return '';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString('ko-KR', { 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  return (
+    <AppContainer>
+      <Header>채팅 앱</Header>
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h2>채팅방 선택</h2>
+        
+        {/* 기존 채팅방 목록 */}
+        {!loading && chatRooms.length > 0 && (
+          <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+            <h3 style={{ marginBottom: '10px', fontSize: '16px' }}>최근 채팅방</h3>
+            {chatRooms.map(room => (
+              <div 
+                key={room.id}
+                onClick={() => navigate(`/chat/${room.id}${room.postId ? `?postId=${room.postId}&sellerId=${room.sellerId}` : ''}`)}
+                style={{
+                  padding: '12px',
+                  border: '1px solid #eee',
+                  borderRadius: '8px',
+                  marginBottom: '8px',
+                  cursor: 'pointer',
+                  backgroundColor: '#f9f9f9'
+                }}
+              >
+                <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
+                  {room.postId ? `게시물 ${room.postId} 채팅` : `채팅방 ${room.id.slice(0, 8)}...`}
+                </div>
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                  참여자: {room.participants?.length || 0}명
+                  {room.createdAt && ` • ${formatTime(room.createdAt)}`}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{ marginTop: '20px' }}>
+          <Button onClick={createNewChat} style={{ marginBottom: '10px', width: '200px' }}>
+            새 채팅방 만들기
+          </Button>
+          <br />
+          <Button onClick={joinExistingChat} style={{ marginBottom: '10px', width: '200px' }}>
+            기존 채팅방 참여
+          </Button>
+          <br />
+          <Button 
+            onClick={() => startChatFromPost('post123', 'seller456')} 
+            style={{ width: '200px' }}
+          >
+            게시물에서 채팅 시작 (테스트)
+          </Button>
+        </div>
+        <div style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
+          현재 사용자 ID: {userId}
+        </div>
+      </div>
+    </AppContainer>
+  );
+};
+
+// 채팅방 컴포넌트 (친구 프로젝트 구조 기반)
+const ChatPage = () => {
+  const { roomId } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useState(() => new URLSearchParams(window.location.search));
+  const postId = searchParams.get('postId');
+  const sellerId = searchParams.get('sellerId');
+  const [messages, setMessages] = useState([]);
+  const [userId] = useState(() => localStorage.getItem('userId') || Date.now().toString());
+  const [socket, setSocket] = useState(null);
   const [showDealModal, setShowDealModal] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -146,61 +221,136 @@ export default function App() {
     }
   }, [userId]);
 
-  // Socket.IO 메시지 수신 처리
+  // Socket.IO 연결
   useEffect(() => {
-    socket.on('chat message', (msg) => {
-      // Firebase에서 메시지가 이미 저장되어 있으므로, 
-      // onSnapshot에서 자동으로 업데이트
-      console.log('메시지 수신:', msg);
+    const newSocket = io(SOCKET_URL, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000,
+      transports: ['websocket', 'polling']
     });
 
+    newSocket.on('connect', () => {
+      console.log('Socket.IO 연결됨');
+    });
+
+    newSocket.on('disconnect', () => {
+      console.log('Socket.IO 연결 해제됨');
+    });
+
+    setSocket(newSocket);
+
     return () => {
-      socket.off('chat message');
+      newSocket.close();
     };
   }, []);
 
+  // 채팅방에 참여
+  useEffect(() => {
+    if (socket && roomId) {
+      socket.emit('join room', roomId);
+      console.log('채팅방 참여 요청:', roomId);
+    }
+  }, [socket, roomId]);
+
+  // 채팅방 생성 또는 확인
+  useEffect(() => {
+    const createOrJoinRoom = async () => {
+      try {
+        const roomRef = doc(db, "chatRooms", roomId);
+        const roomDoc = await getDoc(roomRef);
+        
+        if (!roomDoc.exists()) {
+          // 새 채팅방 생성
+          const roomData = {
+            createdAt: serverTimestamp(),
+            participants: [userId],
+            lastMessage: null
+          };
+
+          // 게시물 정보가 있으면 추가
+          if (postId && sellerId) {
+            roomData.postId = postId;
+            roomData.sellerId = sellerId;
+            roomData.buyerId = userId;
+            roomData.type = 'post_chat';
+          } else {
+            roomData.type = 'general_chat';
+          }
+
+          await setDoc(roomRef, roomData);
+          console.log('새 채팅방 생성됨:', roomId, roomData);
+        } else {
+          // 기존 채팅방에 참여자 추가 (중복 방지)
+          const roomData = roomDoc.data();
+          if (!roomData.participants.includes(userId)) {
+            await setDoc(roomRef, {
+              ...roomData,
+              participants: [...roomData.participants, userId]
+            }, { merge: true });
+          }
+          console.log('기존 채팅방 참여:', roomId);
+        }
+      } catch (error) {
+        console.error('채팅방 생성/참여 중 에러:', error);
+      }
+    };
+
+    if (roomId && userId) {
+      createOrJoinRoom();
+    }
+  }, [roomId, userId, postId, sellerId]);
+
   // Firebase에서 메시지 불러오기
   useEffect(() => {
-    const messagesRef = collection(db, "messages");
+    if (!roomId) return;
+
+    const messagesRef = collection(db, "chatRooms", roomId, "messages");
     const q = query(messagesRef, orderBy("timestamp", "asc"));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const messageList = snapshot.docs.map(doc => ({
+      const messageList = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
         id: doc.id,
-        ...doc.data(),
-        isMe: doc.data().userId === userId
-      }));
+          ...data,
+          userId: data.userId || 'unknown', // userId가 없으면 기본값 설정
+          sender: data.userId === userId ? 'me' : 'other'
+        };
+      });
       setMessages(messageList);
     });
 
     return () => unsubscribe();
-  }, [userId]);
+  }, [roomId, userId]);
 
   // 새 메시지가 올 때 자동 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // 메시지 전송
-  const sendMessage = async (text) => {
-    // text 파라미터로 받음 (ChatInput에서 전달)
-    if (!text.trim()) return;
+  // 메시지 전송 (친구 프로젝트 방식 + Firebase 저장)
+  const handleSend = async (text) => {
+    if (!text || !roomId) return;
     
     try {
       const msg = {
+        type: 'text',
         text: text,
         time: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
-        type: "text",
         timestamp: new Date(),
-        userId: userId
+        userId: userId,
+        sender: 'me'
       };
       
       // Firebase에 메시지 저장
-      const docRef = await addDoc(collection(db, "messages"), msg);
+      const messagesRef = collection(db, "chatRooms", roomId, "messages");
+      const docRef = await addDoc(messagesRef, msg);
       
-      // Socket.IO로 메시지 전송 (Firebase 저장 후)
-      if (isConnected) {
-        socket.emit("chat message", { ...msg, id: docRef.id });
+      // Socket.IO로 메시지 전송
+      if (socket) {
+        socket.emit("chat message", { ...msg, id: docRef.id, roomId });
       }
     } catch (error) {
       console.error('메시지 전송 중 에러 발생:', error);
@@ -208,33 +358,30 @@ export default function App() {
     }
   };
 
-  // 이미지 전송
-  const sendImage = async (url) => {
-    // url: firebase storage에서 받은 이미지 url
-    console.log('sendImage 함수 호출됨, URL:', url);
-    if (!url) {
+  // 이미지 전송 (친구 프로젝트 방식 + Firebase 저장)
+  const handleSendImage = async (url) => {
+    if (!url || !roomId) {
       console.error('이미지 URL이 없습니다.');
       return;
     }
     
     try {
       const msg = {
+        type: 'image',
         image: url,
         time: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
-        type: "image",
         timestamp: new Date(),
-        userId: userId
+        userId: userId,
+        sender: 'me'
       };
-      console.log('이미지 메시지 생성:', msg);
       
       // Firebase에 이미지 메시지 저장
-      const docRef = await addDoc(collection(db, "messages"), msg);
-      console.log('Firebase에 이미지 메시지 저장 완료:', docRef.id);
+      const messagesRef = collection(db, "chatRooms", roomId, "messages");
+      const docRef = await addDoc(messagesRef, msg);
       
-      // Socket.IO로 메시지 전송 (Firebase 저장 후)
-      if (isConnected) {
-        socket.emit("chat message", { ...msg, id: docRef.id });
-        console.log('Socket.IO로 이미지 메시지 전송 완료');
+      // Socket.IO로 메시지 전송
+      if (socket) {
+        socket.emit("chat message", { ...msg, id: docRef.id, roomId });
       }
     } catch (error) {
       console.error('이미지 메시지 전송 중 에러 발생:', error);
@@ -242,26 +389,20 @@ export default function App() {
     }
   };
 
-  // 거래완료 버튼 클릭 시
-  const handleDealComplete = () => {
-    setShowDealModal(true);
-  };
-
-  // 거래완료 확인
-  const handleDealConfirm = async () => {
-    setShowDealModal(false);
-    
+  // 거래완료 처리
+  const handleDealComplete = async () => {
     try {
-      // 거래완료 메시지를 Firebase에 저장
       const dealCompleteMsg = {
+        type: 'dealComplete',
         text: 'cloud1234님이 [거래완료]를 눌렀어요!',
         time: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }),
-        type: "dealComplete",
         timestamp: new Date(),
-        userId: userId
+        userId: userId,
+        sender: 'other'
       };
       
-      await addDoc(collection(db, "messages"), dealCompleteMsg);
+      const messagesRef = collection(db, "chatRooms", roomId, "messages");
+      await addDoc(messagesRef, dealCompleteMsg);
       
       setTimeout(() => {
         alert('거래가 완료되었습니다!');
@@ -272,45 +413,53 @@ export default function App() {
     }
   };
 
-  // 거래완료 취소
-  const handleDealCancel = () => {
-    setShowDealModal(false);
-  };
-
   return (
-    <AppContainer>
-      <Header>채팅</Header>
-      <MessageContainer>
-        {messages.map(msg => (
-          <MessageItem key={msg.id} isMe={msg.isMe}>
-            {msg.type === 'dealComplete' ? (
-              <DealCompleteText>{msg.text}</DealCompleteText>
-            ) : msg.type === 'text' ? (
-              <MessageText isMe={msg.isMe}>{msg.text}</MessageText>
-            ) : (
-              <MessageImage src={msg.image} alt="전송된 이미지" />
-            )}
-            <MessageTime>{msg.time}</MessageTime>
-          </MessageItem>
-        ))}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#fff' }}>
+      {/* 상단 바 */}
+      <div style={{ 
+        height: 56, 
+        display: 'flex', 
+        alignItems: 'center', 
+        borderBottom: '1px solid #eee', 
+        padding: '0 16px', 
+        fontWeight: 700, 
+        fontSize: 20, 
+        justifyContent: 'space-between',
+        backgroundColor: '#fff'
+      }}>
+        <BackButton onClick={() => navigate('/')}>← 뒤로</BackButton>
+        <div>{postId ? `게시물 ${postId} 채팅` : `채팅방: ${roomId}`}</div>
+        <div style={{ width: '60px' }}></div>
+      </div>
+      
+      {/* 메시지 리스트 */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0' }}>
+        <ChatMessageList messages={messages} />
         <div ref={messagesEndRef} />
-      </MessageContainer>
-      <ChatInput
-        onSend={sendMessage}
-        onSendImage={sendImage}
-        onDealComplete={handleDealComplete}
-      />
+      </div>
+      
+      {/* 입력창 */}
+      <ChatInput onSend={handleSend} onSendImage={handleSendImage} onDealComplete={() => setShowDealModal(true)} />
+      
+      {/* 거래완료 모달 */}
       {showDealModal && (
-        <ModalOverlay onClick={handleDealCancel}>
-          <ModalContent onClick={e => e.stopPropagation()}>
-            <ModalTitle>거래를 완료하시겠습니까?</ModalTitle>
-            <ButtonContainer>
-              <Button isYes={true} onClick={handleDealConfirm}>Yes</Button>
-              <Button isYes={false} onClick={handleDealCancel}>No</Button>
-            </ButtonContainer>
-          </ModalContent>
-        </ModalOverlay>
+        <DealCompleteModal 
+          onClose={() => setShowDealModal(false)} 
+          onDealComplete={handleDealComplete}
+        />
       )}
-    </AppContainer>
+    </div>
+  );
+};
+
+// 메인 App 컴포넌트
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/chat/:roomId" element={<ChatPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

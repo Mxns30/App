@@ -1,15 +1,28 @@
+/**
+ * Import function triggers from their respective submodules:
+ *
+ * const {onCall} = require("firebase-functions/v2/https");
+ * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
+ *
+ * See a full list of supported triggers at https://firebase.google.com/docs/functions
+ */
+
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
 const cors = require("cors");
+const { Server } = require("socket.io");
+
+// Firebase Admin 초기화
+admin.initializeApp();
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true }));
 
-const server = http.createServer(app);
-const io = new Server(server, { 
-  cors: { 
-    origin: ["http://localhost:3000", "https://chat-test-react-79eac.web.app"],
+// Socket.IO 서버 설정
+const io = new Server({
+  cors: {
+    origin: ["https://chat-test-react-79eac.web.app", "http://localhost:3000"],
     methods: ["GET", "POST"],
     credentials: true
   },
@@ -133,7 +146,17 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`Socket server running on port ${PORT}`);
+// HTTP 엔드포인트로 Socket.IO 연결
+app.get("/", (req, res) => {
+  res.send("Chat server is running!");
 });
+
+// Socket.IO를 HTTP 서버에 연결
+const server = app.listen(0, () => {
+  console.log("Chat server running on Firebase Functions");
+});
+
+io.attach(server);
+
+// Firebase Functions로 내보내기
+exports.chatServer = functions.https.onRequest(app);
