@@ -7,6 +7,7 @@ import io from 'socket.io-client';
 import ChatInput from './components/ChatInput';
 import ChatMessageList from './components/ChatMessageList';
 import DealCompleteModal from './components/DealCompleteModal';
+import AutoChatPage from './components/AutoChatPage';
 import { v4 as uuidv4 } from 'uuid';
 
 const SOCKET_URL = process.env.NODE_ENV === 'production' 
@@ -111,17 +112,52 @@ const HomePage = () => {
   };
 
   const joinExistingChat = () => {
-    const roomId = prompt('채팅방 ID를 입력하세요:');
-    if (roomId) {
-      navigate(`/chat/${roomId}`);
+    // ID 입력 없이 바로 새 채팅방 생성
+    const roomId = uuidv4();
+    navigate(`/chat/${roomId}`);
+  };
+
+  // 채팅방 삭제 함수
+  const deleteChatRoom = async (roomId, event) => {
+    event.stopPropagation(); // 클릭 이벤트 전파 방지
+    
+    if (window.confirm('정말로 이 채팅방을 삭제하시겠습니까?')) {
+      try {
+        const roomRef = doc(db, "chatRooms", roomId);
+        await setDoc(roomRef, { deleted: true }, { merge: true });
+        console.log('채팅방 삭제됨:', roomId);
+      } catch (error) {
+        console.error('채팅방 삭제 중 에러:', error);
+        alert('채팅방 삭제에 실패했습니다.');
+      }
     }
   };
 
-  // 게시물에서 채팅 시작 (새로 추가)
-  const startChatFromPost = (postId, sellerId) => {
-    // 게시물 ID와 판매자 ID로 고유한 채팅방 ID 생성
-    const roomId = generateRoomIdFromPost(postId, sellerId, userId);
-    navigate(`/chat/${roomId}?postId=${postId}&sellerId=${sellerId}`);
+  // 게시물에서 채팅 시작 (자동으로 기존 채팅방 확인 후 입장/생성)
+  const startChatFromPost = async (postId, sellerId) => {
+    try {
+      // 게시물 ID와 판매자 ID로 고유한 채팅방 ID 생성
+      const roomId = generateRoomIdFromPost(postId, sellerId, userId);
+      
+      // 기존 채팅방이 있는지 확인
+      const roomRef = doc(db, "chatRooms", roomId);
+      const roomDoc = await getDoc(roomRef);
+      
+      if (roomDoc.exists()) {
+        console.log('기존 채팅방 발견, 입장:', roomId);
+        // 기존 채팅방이 있으면 바로 입장
+        navigate(`/chat/${roomId}?postId=${postId}&sellerId=${sellerId}`);
+      } else {
+        console.log('새 채팅방 생성:', roomId);
+        // 채팅방이 없으면 새로 생성하고 입장
+        navigate(`/chat/${roomId}?postId=${postId}&sellerId=${sellerId}`);
+      }
+    } catch (error) {
+      console.error('채팅방 확인 중 에러:', error);
+      // 에러 발생 시 기본적으로 새 채팅방 생성
+      const roomId = generateRoomIdFromPost(postId, sellerId, userId);
+      navigate(`/chat/${roomId}?postId=${postId}&sellerId=${sellerId}`);
+    }
   };
 
   // 게시물 기반 채팅방 ID 생성 함수
@@ -152,7 +188,9 @@ const HomePage = () => {
         {!loading && chatRooms.length > 0 && (
           <div style={{ marginBottom: '20px', textAlign: 'left' }}>
             <h3 style={{ marginBottom: '10px', fontSize: '16px' }}>최근 채팅방</h3>
-            {chatRooms.map(room => (
+            {chatRooms
+              .filter(room => !room.deleted) // 삭제된 채팅방 제외
+              .map(room => (
               <div 
                 key={room.id}
                 onClick={() => navigate(`/chat/${room.id}${room.postId ? `?postId=${room.postId}&sellerId=${room.sellerId}` : ''}`)}
@@ -162,7 +200,8 @@ const HomePage = () => {
                   borderRadius: '8px',
                   marginBottom: '8px',
                   cursor: 'pointer',
-                  backgroundColor: '#f9f9f9'
+                  backgroundColor: '#f9f9f9',
+                  position: 'relative'
                 }}
               >
                 <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
@@ -172,6 +211,24 @@ const HomePage = () => {
                   참여자: {room.participants?.length || 0}명
                   {room.createdAt && ` • ${formatTime(room.createdAt)}`}
                 </div>
+                {/* 삭제 버튼 */}
+                <button
+                  onClick={(e) => deleteChatRoom(room.id, e)}
+                  style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    background: '#ff4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  삭제
+                </button>
               </div>
             ))}
           </div>
@@ -428,7 +485,20 @@ const ChatPage = () => {
         backgroundColor: '#fff'
       }}>
         <BackButton onClick={() => navigate('/')}>← 뒤로</BackButton>
-        <div>{postId ? `게시물 ${postId} 채팅` : `채팅방: ${roomId}`}</div>
+        <div>
+          {postId ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                게시물 {postId} 채팅
+              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                판매자: {sellerId}
+              </div>
+            </div>
+          ) : (
+            `채팅방: ${roomId}`
+          )}
+        </div>
         <div style={{ width: '60px' }}></div>
       </div>
       
@@ -458,6 +528,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/chat/auto" element={<AutoChatPage />} />
         <Route path="/chat/:roomId" element={<ChatPage />} />
       </Routes>
     </BrowserRouter>
