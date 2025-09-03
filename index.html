@@ -99,32 +99,25 @@
             </div>
             
             <div class="home-content">
-                <div class="welcome-card">
-                    <h2>🎉 로그인 성공!</h2>
-                    <p>청춘마켓에 오신 것을 환영합니다.</p>
-                    <p>이제 다양한 서비스를 이용하실 수 있습니다.</p>
-                </div>
-                
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">🛍️</div>
-                        <h3>쇼핑</h3>
-                        <p>다양한 상품을 둘러보세요</p>
+                <div class="qr-scanner-container">
+                    <h2>🔍 QR코드 스캐너</h2>
+                    <p>카메라로 QR코드를 스캔하세요</p>
+                    
+                    <div class="camera-container">
+                        <video id="video" autoplay playsinline></video>
+                        <div class="camera-overlay"></div>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">💬</div>
-                        <h3>커뮤니티</h3>
-                        <p>다른 사용자들과 소통하세요</p>
+                    
+                    <div class="camera-controls">
+                        <button class="btn btn-primary" onclick="captureAndScan()">스캔하기</button>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📱</div>
-                        <h3>마이페이지</h3>
-                        <p>개인 정보를 관리하세요</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">⚙️</div>
-                        <h3>설정</h3>
-                        <p>앱 설정을 변경하세요</p>
+                    
+                    <div id="scan-result" class="scan-result" style="display: none;">
+                        <h3>스캔 결과:</h3>
+                        <div id="scan-content"></div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="resetScan()">🔄 다시 스캔</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -145,5 +138,6 @@
     
     <script src="app.js"></script>
     <script src="sw.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </body>
 </html> 
