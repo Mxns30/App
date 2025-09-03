@@ -623,3 +623,124 @@ input:focus,
         padding: 1.25rem;
     }
 } 
+
+/* QR코드 스캐너 스타일 */
+.qr-scanner-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.qr-scanner-container h2 {
+    color: #696969;
+    margin-bottom: 10px;
+    font-size: 1.8em;
+}
+
+.qr-scanner-container p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+.camera-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 20px;
+}
+
+#video {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    background: #f0f0f0;
+}
+
+.camera-overlay {
+    position: absolute;
+    top: 49%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    border: 2px solid #e4e4e48a;
+    border-radius: 15px;
+    pointer-events: none;
+}
+
+.camera-overlay::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 2px solid rgba(140, 140, 140, 0.3);
+    border-radius: 15px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.camera-controls {
+    margin: 20px 0;
+}
+
+.camera-controls .btn {
+    margin: 5px;
+}
+
+.scan-result {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border-left: 4px solid #4F46E5;
+}
+
+#scan-content {
+    text-align: left;
+}
+
+#scan-content .scan-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+#scan-content .scan-item strong {
+    color: #4F46E5;
+}
+
+/* 상태 메시지 스타일 */
+.status-message {
+    padding: 15px;
+    border-radius: 10px;
+    margin: 20px 0;
+    text-align: center;
+    font-weight: 500;
+}
+
+.status-message.success {
+    color: #155724;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.status-message.error {
+    color: #dc3545;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.status-message.warning {
+    color: #856404;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+} 

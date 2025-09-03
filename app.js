@@ -180,10 +180,23 @@ function showHomeScreen(userName) {
     document.getElementById('signupForm').classList.add('hidden');
     document.getElementById('homeScreen').classList.remove('hidden');
     document.getElementById('userName').textContent = userName;
+    
+    // QR코드 스캔 페이지로 넘어온 후 자동으로 카메라 시작
+    setTimeout(() => {
+        startCamera();
+    }, 500); // 0.5초 후 카메라 시작 (페이지 전환 애니메이션 완료 후)
 }
 
 // 로그아웃
 function logout() {
+    // 카메라 중지
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+        document.getElementById('video').srcObject = null;
+        stopContinuousScanning();
+    }
+    
     document.getElementById('homeScreen').classList.add('hidden');
     document.getElementById('loginForm').classList.remove('hidden');
     // 폼 초기화
@@ -218,4 +231,192 @@ if ('serviceWorker' in navigator) {
             .then(reg => console.log('Service Worker 등록 성공:', reg.scope))
             .catch(err => console.log('Service Worker 등록 실패:', err));
     });
+}
+
+// QR코드 스캔 관련 변수
+let stream = null;
+let canvas = document.createElement('canvas');
+let ctx = canvas.getContext('2d');
+let scanningInterval = null;
+let isScanning = false;
+
+// 카메라 시작
+async function startCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: 'environment',
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            } 
+        });
+        document.getElementById('video').srcObject = stream;
+        showMessage('카메라가 시작되었습니다. QR코드를 카메라에 비춰주세요.', 'success');
+        
+        // 실시간 스캔 시작
+        startContinuousScanning();
+    } catch (error) {
+        showMessage('카메라 접근에 실패했습니다: ' + error.message, 'error');
+    }
+}
+
+// 연속 스캔 시작
+function startContinuousScanning() {
+    if (isScanning) return;
+    
+    isScanning = true;
+    scanningInterval = setInterval(() => {
+        if (stream && !document.getElementById('scan-result').style.display === 'none') {
+            captureAndScan();
+        }
+    }, 1000); // 1초마다 스캔
+}
+
+// 연속 스캔 중지
+function stopContinuousScanning() {
+    if (scanningInterval) {
+        clearInterval(scanningInterval);
+        scanningInterval = null;
+    }
+    isScanning = false;
+}
+
+// 이미지 캡처 및 스캔
+function captureAndScan() {
+    if (!stream) {
+        showMessage('먼저 카메라를 시작해주세요.', 'error');
+        return;
+    }
+
+    const video = document.getElementById('video');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    
+    const imageData = canvas.toDataURL('image/jpeg');
+    scanQRCode(imageData);
+}
+
+// QR코드 스캔 (클라이언트 사이드)
+async function scanQRCode(imageData) {
+    try {
+        showMessage('QR코드 스캔 중...', 'success');
+        
+        // 이미지를 Image 객체로 로드
+        const img = new Image();
+        img.onload = function() {
+            // Canvas에 이미지 그리기
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            // 이미지 데이터 추출
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            // jsQR로 QR코드 인식
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "dontInvert",
+            });
+            
+            if (code) {
+                // QR코드 인식 성공
+                displayScanResults([{
+                    data: code.data,
+                    type: getQRCodeType(code.data),
+                    rect: code.location
+                }]);
+                showMessage('QR코드를 성공적으로 인식했습니다!', 'success');
+            } else {
+                // QR코드 인식 실패
+                showMessage('QR코드를 찾을 수 없습니다. 다른 이미지를 시도해보세요.', 'error');
+                document.getElementById('scan-result').style.display = 'none';
+            }
+        };
+        
+        img.src = imageData;
+        
+    } catch (error) {
+        showMessage('스캔 중 오류가 발생했습니다: ' + error.message, 'error');
+    }
+}
+
+// QR코드 타입 판별
+function getQRCodeType(data) {
+    if (data.startsWith('http://') || data.startsWith('https://')) {
+        return 'URL';
+    } else if (data.startsWith('tel:')) {
+        return '전화번호';
+    } else if (data.startsWith('mailto:')) {
+        return '이메일';
+    } else if (data.startsWith('BEGIN:VCARD')) {
+        return '연락처';
+    } else if (data.startsWith('WIFI:')) {
+        return 'WiFi';
+    } else if (data.match(/^\d{4,}$/)) {
+        return '숫자';
+    } else {
+        return '텍스트';
+    }
+}
+
+// 스캔 결과 표시
+function displayScanResults(results) {
+    const resultDiv = document.getElementById('scan-result');
+    const contentDiv = document.getElementById('scan-content');
+    
+    let html = '';
+    results.forEach((result, index) => {
+        html += `
+            <div class="scan-item">
+                <strong>결과 ${index + 1}:</strong><br>
+                <strong>타입:</strong> ${result.type}<br>
+                <strong>데이터:</strong> ${result.data}
+            </div>
+        `;
+    });
+    
+    contentDiv.innerHTML = html;
+    resultDiv.style.display = 'block';
+    
+    // 스캔 성공 시 연속 스캔 중지
+    stopContinuousScanning();
+    
+    showMessage('QR코드 스캔이 완료되었습니다!', 'success');
+}
+
+// 상태 메시지 표시
+function showMessage(message, type = 'success') {
+    // 기존 메시지 제거
+    const existingMessage = document.querySelector('.status-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `status-message ${type}`;
+    messageDiv.textContent = message;
+    
+    const homeContent = document.querySelector('.home-content');
+    if (homeContent) {
+        homeContent.insertBefore(messageDiv, homeContent.firstChild);
+        
+        // 5초 후 자동 제거
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.remove();
+            }
+        }, 5000);
+    }
+} 
+
+// 다시 스캔
+function resetScan() {
+    // 스캔 결과 숨기기
+    document.getElementById('scan-result').style.display = 'none';
+    
+    // 카메라가 실행 중이면 연속 스캔 재시작
+    if (stream) {
+        startContinuousScanning();
+        showMessage('새로운 QR코드를 스캔할 준비가 되었습니다.', 'success');
+    }
 } 
