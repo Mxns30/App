@@ -322,7 +322,6 @@ async function scanQRCode(imageData) {
                 // QR코드 인식 성공
                 displayScanResults([{
                     data: code.data,
-                    type: getQRCodeType(code.data),
                     rect: code.location
                 }]);
                 showMessage('QR코드를 성공적으로 인식했습니다!', 'success');
@@ -368,8 +367,6 @@ function displayScanResults(results) {
     results.forEach((result, index) => {
         html += `
             <div class="scan-item">
-                <strong>결과 ${index + 1}:</strong><br>
-                <strong>타입:</strong> ${result.type}<br>
                 <strong>데이터:</strong> ${result.data}
             </div>
         `;
