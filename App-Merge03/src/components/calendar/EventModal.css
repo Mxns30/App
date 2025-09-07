@@ -1,0 +1,179 @@
+.calendar-pwa-modal {
+    display: block;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.calendar-pwa-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 24px;
+    border: 1px solid #888;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.calendar-pwa-close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.calendar-pwa-close-btn:hover,
+.calendar-pwa-close-btn:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.calendar-pwa-modal-date {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.calendar-pwa-event-sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.calendar-pwa-event-section h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #FDA97B;
+    color: #333;
+}
+
+.calendar-pwa-event-list {
+    margin-bottom: 12px;
+    min-height: 40px;
+    max-height: 120px;
+    overflow-y: auto;
+    list-style-type: none;
+}
+
+.calendar-pwa-event-list li {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.calendar-pwa-event-list li > span {
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+.calendar-pwa-event-list li.calendar-pwa-is-editing {
+    background-color: #fff9e6;
+}
+
+.calendar-pwa-edit-event-input {
+    flex-grow: 1;
+    border: 1px solid #FDA97B;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.calendar-pwa-edit-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.calendar-pwa-save-event-btn {
+    background: linear-gradient(to bottom, #30D6A3, #5ED381);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.calendar-pwa-save-event-btn:hover {
+    background: linear-gradient(to bottom, #2BC592, #4EC272);
+    transform: translateY(-1px);
+}
+
+.calendar-pwa-cancel-edit-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0 4px;
+}
+
+.calendar-pwa-event-list li.calendar-pwa-no-events {
+    justify-content: center;
+    color: #888;
+    border: none;
+    font-size: 14px;
+    padding-top: 10px;
+}
+
+.calendar-pwa-delete-event-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.calendar-pwa-delete-event-btn:hover {
+    color: #e74c3c;
+}
+
+.calendar-pwa-add-event-form {
+    display: flex;
+    gap: 8px;
+}
+
+.calendar-pwa-add-event-form input {
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.calendar-pwa-add-event-form button {
+    background: linear-gradient(to bottom, #30D6A3, #5ED381);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.calendar-pwa-add-event-form button:hover {
+    background: linear-gradient(to bottom, #2BC592, #4EC272);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
