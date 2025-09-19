@@ -16,7 +16,7 @@ const QRScanner = ({ showNotification, onStartAdventure }) => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          facingMode: 'environment',
+          facingMode: 'user',
           width: { ideal: 1280 },
           height: { ideal: 720 }
         } 
