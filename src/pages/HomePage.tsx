@@ -317,7 +317,7 @@ const HomePage: React.FC = () => {
   }, [deleteDialogOpen]);
 
   return (
-    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8, width: '100%', maxWidth: '414px', overflowY: 'auto' }}>
+    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0, width: '100%', maxWidth: '414px', overflowY: 'auto' }}>
       {/* 상단 */}
       <Box display="flex" alignItems="center" mb={2} gap={1}>
         <TextField

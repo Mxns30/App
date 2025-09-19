@@ -19,7 +19,7 @@ const AppContainer = styled.div`
   height: 100dvh; /* 모바일에서 동적 viewport 높이 사용 */
   background: #fafafa;
   overflow-y: auto;
-  padding-bottom: 80px; /* 하단 네비게이션 공간 확보 */
+  padding-bottom: 0px; /* 하단 네비게이션 공간 확보 */
   width: 100%;
   max-width: 414px;
   margin: 0 auto;

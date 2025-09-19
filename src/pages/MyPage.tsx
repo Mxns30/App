@@ -209,7 +209,7 @@ const MyPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8, width: '100%', maxWidth: '414px', overflowY: 'auto' }}>
+    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0, width: '100%', maxWidth: '414px', overflowY: 'auto' }}>
       <Typography variant="h4" gutterBottom>
         MY
       </Typography>

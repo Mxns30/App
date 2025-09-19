@@ -44,7 +44,7 @@ export default function SearchPage() {
   );
 
   return (
-    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 8, position: 'relative', width: '100%', maxWidth: '414px', overflowY: 'auto' }}>
+    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0, position: 'relative', width: '100%', maxWidth: '414px', overflowY: 'auto' }}>
       {/* 상단 바 */}
       <Box display="flex" alignItems="center" pt={3} pb={2} gap={1}>
         <IconButton onClick={() => navigate(-1)}>

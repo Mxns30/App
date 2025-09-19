@@ -16,7 +16,7 @@ const CalendarPage: React.FC = () => {
       minHeight: '100vh',
       background: '#fafafa',
       padding: '0',
-      paddingBottom: '80px', // 하단 네비게이션 공간 확보
+      paddingBottom: '0', // 하단 네비게이션 공간 확보
       width: '100%',
       maxWidth: '414px',
       margin: '0 auto',
