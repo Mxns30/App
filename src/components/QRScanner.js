@@ -16,7 +16,7 @@ const QRScanner = ({ showNotification, onStartAdventure }) => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          facingMode: 'user',
+          facingMode: 'user', // 셀카 모드 (전면 카메라)
           width: { ideal: 1280 },
           height: { ideal: 720 }
         } 
@@ -155,32 +155,153 @@ const QRScanner = ({ showNotification, onStartAdventure }) => {
   }, [stream]);
 
   return (
-    <div className="qr-scanner-container">
-      <h2>🔍 QR코드 스캐너</h2>
-      <p>카메라로 QR코드를 스캔하세요</p>
+    <div className="qr-scanner-container" style={{
+      padding: '20px',
+      maxWidth: '414px',
+      margin: '0 auto',
+      boxSizing: 'border-box',
+      minHeight: '100vh',
+      backgroundColor: '#fafafa'
+    }}>
+      <h2 style={{ 
+        textAlign: 'center', 
+        marginBottom: '10px',
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: '#333'
+      }}>🔍 QR코드 스캐너</h2>
+      <p style={{ 
+        textAlign: 'center', 
+        marginBottom: '20px',
+        color: '#666',
+        fontSize: '16px'
+      }}>카메라로 QR코드를 스캔하세요</p>
       
-      <div className="camera-container">
-        <video ref={videoRef} autoPlay playsInline></video>
-        <div className="camera-overlay"></div>
+      <div className="camera-container" style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '350px',
+        height: '300px',
+        margin: '0 auto 20px',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        backgroundColor: '#000',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+      }}>
+        <video 
+          ref={videoRef} 
+          autoPlay 
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+        ></video>
+        <div className="camera-overlay" style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '200px',
+          height: '200px',
+          border: '2px solid #1abc9c',
+          borderRadius: '12px',
+          pointerEvents: 'none',
+          boxSizing: 'border-box'
+        }}></div>
       </div>
       
-      <div className="camera-controls">
-        <button className="btn btn-primary" onClick={captureAndScan}>스캔하기</button>
+      <div className="camera-controls" style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <button 
+          className="btn btn-primary" 
+          onClick={captureAndScan}
+          style={{
+            backgroundColor: '#1abc9c',
+            color: 'white',
+            border: 'none',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(26, 188, 156, 0.3)',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseOver={(e) => {
+            e.target.style.backgroundColor = '#16d9b6';
+            e.target.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => {
+            e.target.style.backgroundColor = '#1abc9c';
+            e.target.style.transform = 'translateY(0)';
+          }}
+        >스캔하기</button>
       </div>
       
       {showResult && scanResult && (
-        <div className="scan-result">
-          <h3>스캔 결과:</h3>
-          <div className="scan-content">
-            <div className="scan-item">
-              <strong>데이터:</strong> {scanResult.data}
+        <div className="scan-result" style={{
+          backgroundColor: 'white',
+          padding: '20px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          marginBottom: '20px'
+        }}>
+          <h3 style={{ 
+            marginBottom: '15px',
+            color: '#333',
+            fontSize: '18px',
+            fontWeight: 'bold'
+          }}>스캔 결과:</h3>
+          <div className="scan-content" style={{ marginBottom: '20px' }}>
+            <div className="scan-item" style={{
+              backgroundColor: '#f8f9fa',
+              padding: '12px',
+              borderRadius: '8px',
+              border: '1px solid #e9ecef'
+            }}>
+              <strong style={{ color: '#1abc9c' }}>데이터:</strong> 
+              <span style={{ marginLeft: '8px', wordBreak: 'break-all' }}>{scanResult.data}</span>
             </div>
           </div>
-          <div className="scan-buttons">
-            <button className="btn btn-primary" onClick={resetScan}>🔄 다시 스캔</button>
+          <div className="scan-buttons" style={{ 
+            display: 'flex', 
+            gap: '10px', 
+            justifyContent: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <button 
+              className="btn btn-primary" 
+              onClick={resetScan}
+              style={{
+                backgroundColor: '#1abc9c',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(26, 188, 156, 0.3)'
+              }}
+            >🔄 다시 스캔</button>
           </div>
-          <div className="adventure-button">
-            <button className="btn btn-secondary" onClick={onStartAdventure}>🚀 시작하기</button>
+          <div className="adventure-button" style={{ marginTop: '15px' }}>
+            <button 
+              className="btn btn-secondary" 
+              onClick={onStartAdventure}
+              style={{
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(108, 117, 125, 0.3)'
+              }}
+            >🚀 시작하기</button>
           </div>
         </div>
       )}

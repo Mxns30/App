@@ -6,11 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import BottomNavigation from '../components/BottomNavigation.tsx';
 
 const categories = ['공학', '교육', '사회', '예체능', '의약', '인문', '자연'];
 const types = ['과잠/학잠', '전공책', '기자재'];
@@ -225,7 +221,15 @@ const PostRegistration: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8, width: '100%', maxWidth: '414px' }}>
+    <Container maxWidth="xs" sx={{ 
+      bgcolor: '#fafafa', 
+      minHeight: '100vh', 
+      pt: 8, 
+      pb: { xs: '70px', sm: '80px' }, 
+      width: '100%', 
+      maxWidth: '414px',
+      boxSizing: 'border-box'
+    }}>
       <Box sx={{ p: 3, pt: 2, position: 'relative' }}>
         <IconButton sx={{ position: 'absolute', left: 8, top: 8 }} onClick={() => navigate(-1)}>
           <CloseIcon />
@@ -486,41 +490,7 @@ const PostRegistration: React.FC = () => {
         </DialogContent>
       </Dialog>
       
-      {/* 하단 네비게이션 */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '414px',
-          height: 80,
-          bgcolor: '#fff',
-          borderTop: '1px solid #e0e0e0',
-          borderLeft: '1px solid #e0e0e0',
-          borderRight: '1px solid #e0e0e0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          zIndex: 1000,
-        }}
-      >
-        <IconButton onClick={() => navigate('/')}>
-          <HomeOutlinedIcon />
-        </IconButton>
-        <IconButton onClick={() => navigate('/search')}>
-          <TravelExploreIcon />
-        </IconButton>
-        <IconButton onClick={() => navigate('/chat')}>
-          <ChatBubbleOutlineIcon />
-        </IconButton>
-        <IconButton onClick={() => navigate('/calendar')}>
-          <CalendarTodayIcon />
-        </IconButton>
-        <IconButton onClick={() => navigate('/my')}>
-          <PersonOutlineIcon />
-        </IconButton>
-      </Box>
+      <BottomNavigation />
     </Container>
   );
 };

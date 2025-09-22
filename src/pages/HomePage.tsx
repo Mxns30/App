@@ -13,9 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Avatar from '@mui/material/Avatar';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import BottomNavigation from '../components/BottomNavigation.tsx';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PetsIcon from '@mui/icons-material/Pets';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -317,7 +315,16 @@ const HomePage: React.FC = () => {
   }, [deleteDialogOpen]);
 
   return (
-    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0, width: '100%', maxWidth: '414px', overflowY: 'auto' }}>
+    <Container maxWidth="xs" sx={{ 
+      bgcolor: '#fafafa', 
+      minHeight: '100vh', 
+      pt: 0, 
+      pb: { xs: '70px', sm: '80px' }, 
+      width: '100%', 
+      maxWidth: '414px', 
+      overflowY: 'auto',
+      boxSizing: 'border-box'
+    }}>
       {/* 상단 */}
       <Box display="flex" alignItems="center" mb={2} gap={1}>
         <TextField
@@ -450,56 +457,7 @@ const HomePage: React.FC = () => {
         {editPostId ? '수정하기' : '+ Posting'}
       </Button>
 
-      {/* 하단 네비게이션 */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '414px',
-          height: 80,
-          bgcolor: '#fff',
-          borderTop: '1px solid #e0e0e0',
-          borderLeft: '1px solid #e0e0e0',
-          borderRight: '1px solid #e0e0e0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          zIndex: 1000,
-        }}
-      >
-        <IconButton
-          sx={{ color: '#1abc9c' }}
-          onClick={() => navigate('/')}
-        >
-          <HomeOutlinedIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#666' }}
-          onClick={() => navigate('/search')}
-        >
-          <TravelExploreIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#666' }}
-          onClick={() => navigate('/chat')}
-        >
-          <ChatBubbleOutlineIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#666' }}
-          onClick={() => navigate('/calendar')}
-        >
-          <CalendarTodayIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#666' }}
-          onClick={() => navigate('/my')}
-        >
-          <PersonOutlineIcon />
-        </IconButton>
-      </Box>
+      <BottomNavigation />
 
       {/* 게시글 등록 Dialog */}
       <Dialog 

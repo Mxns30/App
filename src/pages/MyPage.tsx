@@ -11,11 +11,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import BottomNavigation from '../components/BottomNavigation.tsx';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { db, storage, auth } from '../config/firebase.ts';
@@ -273,56 +269,7 @@ const MyPage: React.FC = () => {
         </Grid>
       </TabPanel>
       
-      {/* 하단 네비게이션 */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '414px',
-          height: 80,
-          bgcolor: '#fff',
-          borderTop: '1px solid #e0e0e0',
-          borderLeft: '1px solid #e0e0e0',
-          borderRight: '1px solid #e0e0e0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          zIndex: 1000,
-        }}
-      >
-        <IconButton
-          sx={{ color: '#666', minWidth: 'auto' }}
-          onClick={() => navigate('/')}
-        >
-          <HomeOutlinedIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#666', minWidth: 'auto' }}
-          onClick={() => navigate('/search')}
-        >
-          <TravelExploreIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#666', minWidth: 'auto' }}
-          onClick={() => navigate('/chat')}
-        >
-          <ChatBubbleOutlineIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#666', minWidth: 'auto' }}
-          onClick={() => navigate('/calendar')}
-        >
-          <CalendarTodayIcon />
-        </IconButton>
-        <IconButton
-          sx={{ color: '#1abc9c', minWidth: 'auto' }}
-          onClick={() => navigate('/my')}
-        >
-          <PersonOutlineIcon />
-        </IconButton>
-      </Box>
+      <BottomNavigation />
     </Container>
   );
 };
