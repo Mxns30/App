@@ -1,0 +1,32 @@
+.calendar-pwa-container {
+    position: relative;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    margin: 15vh auto 0;
+    flex-grow: 1;
+}
+
+.calendar-pwa-cat-image {
+    position: absolute;
+    top: -78px;
+    left: 10px;
+    width: 132px;
+    z-index: 10;
+}
+
+@media (max-width: 480px) {
+    .calendar-pwa-container {
+        margin: 20vh auto 0;
+        padding: 16px;
+        max-width: 350px;
+    }
+    
+    .calendar-pwa-cat-image {
+        top: -110px;
+        left: 20px;
+        width: 110px;
+    }
+} 

@@ -1,0 +1,9 @@
+{
+  "name": "CCMarket",
+  "short_name": "CCMarket",
+  "description": "CCMarket 로그인 및 회원가입 PWA",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#30D6A3",
+  "theme_color": "#30D6A3"
+}
