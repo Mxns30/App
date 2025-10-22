@@ -51,7 +51,7 @@ const initialPosts: Post[] = [
     marketPrice: 8000,
     isLiked: false,
     image: undefined,
-    userId: 'user1',
+    userId: 'sample_user_1',
     desc: '설명 예시',
   },
   {
@@ -63,7 +63,7 @@ const initialPosts: Post[] = [
     marketPrice: 10000,
     isLiked: true,
     image: undefined,
-    userId: 'user2',
+    userId: 'sample_user_2',
     desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
   },
   {
@@ -75,7 +75,7 @@ const initialPosts: Post[] = [
     marketPrice: 7000,
     isLiked: false,
     image: undefined,
-    userId: 'user3',
+    userId: 'sample_user_3',
     desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
   },
   {
@@ -87,7 +87,7 @@ const initialPosts: Post[] = [
     marketPrice: 12000,
     isLiked: false,
     image: undefined,
-    userId: 'user4',
+    userId: 'sample_user_4',
     desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
   },
   {
@@ -99,7 +99,7 @@ const initialPosts: Post[] = [
     marketPrice: 10000,
     isLiked: false,
     image: undefined,
-    userId: 'user5',
+    userId: 'sample_user_5',
     desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
   },
 ];
@@ -434,11 +434,6 @@ const HomePage: React.FC = () => {
               <CardContent sx={{ flex: 1, p: 1 }}>
                 <Typography fontWeight="bold" fontSize={16}>
                   {post.title}
-                  {post.isFirebasePost && (
-                    <span style={{ marginLeft: 8, fontSize: 12, color: '#1abc9c', backgroundColor: '#e6fff6', padding: '2px 6px', borderRadius: 4 }}>
-                      실제 등록
-                    </span>
-                  )}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {(() => {
