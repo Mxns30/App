@@ -1,0 +1,35 @@
+/* 캘린더 PWA 전용 전역 스타일 */
+.calendar-pwa-body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(to bottom, #30D6A3, #5ED381);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+}
+
+.calendar-pwa-body * {
+    box-sizing: border-box;
+}
+
+/* 기존 body 스타일은 유지하되, 캘린더 PWA가 독립적으로 작동할 수 있도록 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(to bottom, #30D6A3, #5ED381);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+} 
