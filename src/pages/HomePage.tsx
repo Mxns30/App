@@ -42,66 +42,7 @@ type Post = {
 
 // 임시 내 uid (실제로는 AuthContext에서 가져옴)
 const initialPosts: Post[] = [
-  {
-    id: 1,
-    title: '혼자 공부하는 C언어',
-    school: '한양여자대학교',
-    major: '시행학과',
-    price: 10000,
-    marketPrice: 8000,
-    isLiked: false,
-    image: undefined,
-    userId: 'sample_user_1',
-    desc: '설명 예시',
-  },
-  {
-    id: 2,
-    title: '데이터베이스 개론과 실습',
-    school: '한양여자대학교',
-    major: '스마트IT과',
-    price: 9000,
-    marketPrice: 10000,
-    isLiked: true,
-    image: undefined,
-    userId: 'sample_user_2',
-    desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
-  },
-  {
-    id: 3,
-    title: '인간관계 심리학',
-    school: '한양여자대학교',
-    major: '사회복지과',
-    price: 11000,
-    marketPrice: 7000,
-    isLiked: false,
-    image: undefined,
-    userId: 'sample_user_3',
-    desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
-  },
-  {
-    id: 4,
-    title: '관광마케팅',
-    school: '한양여자대학교',
-    major: '호텔관광과',
-    price: 11500,
-    marketPrice: 12000,
-    isLiked: false,
-    image: undefined,
-    userId: 'sample_user_4',
-    desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
-  },
-  {
-    id: 5,
-    title: '항공운임 발권실무',
-    school: '한양여자대학교',
-    major: '항공과',
-    price: 10000,
-    marketPrice: 10000,
-    isLiked: false,
-    image: undefined,
-    userId: 'sample_user_5',
-    desc: '1:1 최적화도 배우는 C 프로그래밍 지침서. 이 책은 독학으로 C 언어를 배우는 입문자가 꼭 필요한 내용을 제대로 학습할 수 있도록 구성했다. 우왕~ 이렇게 설명이 들어가요.',
-  },
+
 ];
 
 const categories = ['공학', '교육', '사회', '예체능', '의약', '인문', '자연'];
