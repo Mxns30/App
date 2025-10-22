@@ -320,8 +320,8 @@ const PostDetail: React.FC = () => {
   const images: string[] = post.images && post.images.length > 0
     ? post.images
     : post.image ? [post.image] : [];
-  // base64로 시작하는 값만 필터링
-  const validImages = images.filter(src => typeof src === 'string' && src.startsWith('data:image'));
+  // Firebase Storage URL(https://...)과 base64(data:image...) 모두 허용
+  const validImages = images.filter(src => typeof src === 'string' && (src.startsWith('data:image') || src.startsWith('http')));
 
   // 계열/종류 분리
   const [category, type] = post.major.split(' ');
