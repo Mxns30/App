@@ -1,0 +1,13 @@
+---
+description:
+globs:
+alwaysApply: false
+
+## TDD (Test-Driven Development) Based Rules
+- Write Tests First, Then Implement Code (Red): Before starting to implement a feature, first write a failing test case that clearly defines its requirements.
+- Minimal Implementation (Green): Focus on writing the simplest, most minimal code necessary to pass the test. At this stage, passing the test is the priority over perfection.
+- Code Refactoring (Refactor): After the test passes, refactor the code to improve its structure and remove duplication while keeping its external behavior unchanged. All existing tests must still pass after refactoring.
+- Single Responsibility Tests: Each test case should verify only one feature or one scenario. Break down complex logic into multiple small, independent tests for verification.
+- Dependency Mocking: When testing code that depends on external systems like APIs or databases, you must actively use Jest's mock functions to isolate these dependencies. Do not write tests that connect to a live network or database.
+---
+
