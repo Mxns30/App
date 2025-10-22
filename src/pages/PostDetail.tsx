@@ -27,8 +27,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import EditDeleteActionSheet from './EditDeleteActionSheet';
 import { useAuth } from '../contexts/AuthContext';
-import { collection, getDocs, doc, getDoc, collectionGroup } from 'firebase/firestore';
-import { ref, getDownloadURL, listAll } from 'firebase/storage';
+import { collection, getDocs, doc, getDoc, collectionGroup, deleteDoc } from 'firebase/firestore';
+import { ref, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 
 type Post = {
@@ -68,13 +68,52 @@ const PostDetail: React.FC = () => {
   //   }, 150);
   // };
   const handleDeleteCancel = () => setConfirmDeleteOpen(false);
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     setConfirmDeleteOpen(false);
     if (post) {
-      const updatedPosts = posts.filter(p => p.id !== post.id);
-      setPosts(updatedPosts);
-      localStorage.setItem('posts', JSON.stringify(updatedPosts));
-      navigate('/');
+      try {
+        console.log('🗑️ 게시글 삭제 시작:', post.id);
+        
+        // Firebase 게시글인지 확인
+        if (post.isFirebasePost) {
+          console.log('🔥 Firebase 게시글 삭제 중...');
+          
+          // Firebase에서 실제 문서 삭제
+          const userId = post.userId;
+          const docId = post.id.toString().split('_')[1]; // userId_docId 형식에서 docId 추출
+          
+          console.log(`🗑️ 삭제할 문서: posts/${userId}/userPosts/${docId}`);
+          const postRef = doc(db, 'posts', userId, 'userPosts', docId);
+          await deleteDoc(postRef);
+          
+          // Firebase Storage에서 이미지 삭제
+          try {
+            const storageRef = ref(storage, `posts/${userId}/${docId}`);
+            const result = await listAll(storageRef);
+            
+            // 모든 이미지 파일 삭제
+            const deletePromises = result.items.map(item => deleteObject(item));
+            await Promise.all(deletePromises);
+            console.log('🖼️ Firebase Storage 이미지 삭제 완료');
+          } catch (storageError) {
+            console.log('⚠️ Storage 이미지 삭제 실패 (이미지가 없을 수 있음):', storageError);
+          }
+          
+          console.log('✅ Firebase 게시글 삭제 완료');
+        } else {
+          // 로컬 게시글 삭제
+          console.log('📱 로컬 게시글 삭제 중...');
+          const updatedPosts = posts.filter(p => p.id !== post.id);
+          setPosts(updatedPosts);
+          localStorage.setItem('posts', JSON.stringify(updatedPosts));
+          console.log('✅ 로컬 게시글 삭제 완료');
+        }
+        
+        navigate('/');
+      } catch (error) {
+        console.error('❌ 게시글 삭제 실패:', error);
+        alert('게시글 삭제에 실패했습니다. 다시 시도해주세요.');
+      }
     }
   };
 
