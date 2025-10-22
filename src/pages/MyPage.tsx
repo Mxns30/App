@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Alert,
   IconButton,
+  Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -19,6 +20,7 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { db, storage, auth } from '../config/firebase';
+import { useAuth } from '../contexts/AuthContext';
 import PostCard from '../components/PostCard';
 import { GridProps } from '@mui/material/Grid';
 
@@ -56,6 +58,7 @@ interface Post {
 
 const MyPage: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [value, setValue] = useState(0);
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [favorites, setFavorites] = useState<Post[]>([]);
@@ -210,9 +213,27 @@ const MyPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, pb: 12, position: 'relative' }}>
-      <Typography variant="h4" gutterBottom>
-        MY
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 0 }}>
+          MY
+        </Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={async () => {
+            try {
+              await logout();
+              // 스플래시부터 시작하도록 상태 힌트 저장 후 전체 리로드
+              localStorage.setItem('currentScreen', 'splash');
+              window.location.href = '/';
+            } catch (e) {
+              console.error('로그아웃 실패:', e);
+            }
+          }}
+        >
+          로그아웃
+        </Button>
+      </Box>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange}>
