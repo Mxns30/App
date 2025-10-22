@@ -2,14 +2,21 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
+
+// React 앱 빌드 파일 서빙
+app.use(express.static(path.join(__dirname, '../../build')));
+
 app.use(cors({
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
+    "http://localhost:3015",
     "http://127.0.0.1:3000", 
     "http://127.0.0.1:3001",
+    "http://127.0.0.1:3015",
     /^http:\/\/192\.168\.\d+\.\d+:\d+$/,
     /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/,
     /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+:\d+$/
@@ -22,9 +29,11 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:3000",
-      "http://localhost:3001", 
+      "http://localhost:3001",
+      "http://localhost:3015",
       "http://127.0.0.1:3000",
       "http://127.0.0.1:3001",
+      "http://127.0.0.1:3015",
       /^http:\/\/192\.168\.\d+\.\d+:\d+$/,  // 로컬 네트워크 IP 허용
       /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/,   // 로컬 네트워크 IP 허용
       /^http:\/\/172\.(1[6-9]|2[0-9]|3[0-1])\.\d+\.\d+:\d+$/  // 로컬 네트워크 IP 허용
@@ -69,5 +78,5 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3010;
+const PORT = process.env.PORT || 3015;
 server.listen(PORT, () => console.log(`Socket server running on port ${PORT}`));

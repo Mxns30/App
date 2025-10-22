@@ -9,7 +9,7 @@ import ChatMessageList from '../../components/chat/ChatMessageList';
 import DealCompleteModal from '../../components/chat/DealCompleteModal';
 
 // 현재 호스트(IP 또는 도메인) 기준으로 소켓 서버에 연결 (LAN 테스트 지원)
-const SOCKET_URL = `http://${window.location.hostname}:3010`;
+const SOCKET_URL = `http://${window.location.hostname}:3015`;
 
 interface Message {
   id?: string;
