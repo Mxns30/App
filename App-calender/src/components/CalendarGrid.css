@@ -1,0 +1,104 @@
+.calendar-pwa-grid {
+    width: 100%;
+}
+
+.calendar-pwa-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.calendar-pwa-weekdays div {
+    text-align: center;
+    font-weight: 600;
+    color: #666;
+    font-size: 14px;
+}
+
+.calendar-pwa-weekdays .calendar-pwa-sunday-header {
+    color: #FDA97B;
+}
+
+.calendar-pwa-weekdays .calendar-pwa-saturday-header {
+    color: #8DC5A7;
+}
+
+.calendar-pwa-days {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.calendar-pwa-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.calendar-pwa-week:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.calendar-pwa-day {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: default;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.calendar-pwa-day.calendar-pwa-current-month-day {
+    cursor: pointer;
+}
+
+.calendar-pwa-day.calendar-pwa-other-month {
+    color: #ccc;
+}
+
+.calendar-pwa-day.calendar-pwa-sunday:not(.calendar-pwa-other-month) {
+    color: #FDA97B;
+}
+
+.calendar-pwa-day.calendar-pwa-saturday:not(.calendar-pwa-other-month) {
+    color: #8DC5A7;
+}
+
+.calendar-pwa-day.calendar-pwa-today {
+    background-color: #FDA97B !important;
+    color: white !important;
+}
+
+.calendar-pwa-day.calendar-pwa-today:hover {
+    background-color: #FDA97B !important;
+    color: white !important;
+}
+
+.calendar-pwa-day .calendar-pwa-event-marker {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    background-color: #8DC5A7;
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.calendar-pwa-day:not(.calendar-pwa-today):hover {
+    background-color: #f5f5f5;
+}
+
+@media (max-width: 480px) {
+    .calendar-pwa-day {
+        font-size: 14px;
+    }
+} 

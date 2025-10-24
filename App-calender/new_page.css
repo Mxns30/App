@@ -1,0 +1,126 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(to bottom, #30D6A3, #5ED381);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.calendar-container {
+    position: relative;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    margin: 15vh auto 0;
+    flex-grow: 1;
+}
+
+.cat-image {
+    position: absolute;
+    top: -78px;
+    left: 10px;
+    width: 132px;
+    z-index: 10;
+}
+
+.inner-rectangle {
+    background-color: #E8F5E8;
+    border-radius: 16px;
+    height: calc(100% - 50px);
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 50px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#add-photo-btn {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #8DC5A7;
+    background-color: transparent;
+    color: #8DC5A7;
+    font-size: 48px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#add-photo-btn:hover {
+    background-color: #D4E8D4;
+    color: #6BAF8A;
+    border-style: solid;
+}
+
+#image-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+}
+
+#image-container.has-image {
+    display: block;
+}
+
+#image-container.has-image + #add-photo-btn {
+    display: none;
+}
+
+#image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 480px) {
+    .calendar-container {
+        margin: 20vh auto 0;
+        padding: 16px;
+        max-width: 350px;
+    }
+    
+    .cat-image {
+        top: -110px;
+        left: 20px;
+        width: 110px;
+    }
+}
+
+.floating-action-button {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #8DC5A7;
+    transition: all 0.2s ease-in-out;
+    z-index: 100;
+}
+
+.floating-action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+} 
