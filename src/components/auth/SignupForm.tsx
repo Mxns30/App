@@ -123,7 +123,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onShowLogin, showNotification, 
       let errorMessage = '회원가입에 실패했습니다.';
       
       if (error.code === 'auth/email-already-in-use') {
-        errorMessage = '이미 사용 중인 사용자 ID입니다.';
+        errorMessage = '이미 존재하는 아이디입니다.';
       } else if (error.code === 'auth/weak-password') {
         errorMessage = '비밀번호가 너무 약합니다. 6자 이상 입력해주세요.';
       } else if (error.code === 'auth/invalid-email') {
