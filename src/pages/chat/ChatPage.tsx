@@ -483,7 +483,7 @@ const ChatPage: React.FC = () => {
         <div style={{ width: '60px' }}></div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 12px' }}>
         <ChatMessageList messages={messages} />
         <div ref={messagesEndRef} />
       </div>
