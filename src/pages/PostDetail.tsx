@@ -397,7 +397,7 @@ const PostDetail: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
+      <Container maxWidth="xs" disableGutters sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
         <Box display="flex" alignItems="center" mb={3}>
           <IconButton onClick={() => navigate(backTarget)}> <ArrowBackIcon /> </IconButton>
           <Typography variant="h6" sx={{ ml: 1 }}>게시글 불러오는 중</Typography>
@@ -410,7 +410,7 @@ const PostDetail: React.FC = () => {
 
   if (!post) {
     return (
-      <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
+      <Container maxWidth="xs" disableGutters sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
         <Box display="flex" alignItems="center" mb={3}>
           <IconButton onClick={() => navigate(backTarget)}> <ArrowBackIcon /> </IconButton>
           <Typography variant="h6" sx={{ ml: 1 }}>게시글을 찾을 수 없습니다</Typography>
@@ -435,9 +435,9 @@ const PostDetail: React.FC = () => {
   // 게시글이 없을 때 처리 (보호용)
 
   return (
-    <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0 }}>
+    <Container maxWidth="xs" disableGutters sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0 }}>
       {/* 헤더 */}
-      <Box display="flex" alignItems="center" px={1.5} pt={2} pb={1}>
+      <Box display="flex" alignItems="center" px={1} pt={2} pb={1}>
         <IconButton onClick={() => navigate(backTarget)}> <ArrowBackIcon /> </IconButton>
         <Box flex={1} />
         {(post.userId === myUid || post.userId === 'me') && (

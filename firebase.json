@@ -23,6 +23,7 @@
     "singleProjectMode": true
   },
   "hosting": {
+    "site": "smartit-ae7f9",
     "public": "build",
     "ignore": [
       "firebase.json",
