@@ -1,6 +1,11 @@
 {
-  "short_name": "중고거래",
-  "name": "중고거래 PWA",
+  "short_name": "CCMarket",
+  "name": "청춘마켓",
+  "description": "CCMarket",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
   "icons": [
     {
       "src": "favicon.ico",
@@ -17,9 +22,5 @@
       "type": "image/png",
       "sizes": "512x512"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  ]
 } 
