@@ -433,7 +433,7 @@ const ChatPage: React.FC = () => {
         backgroundColor: '#fff'
       }}>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/chat')}
           style={{
             background: 'none',
             border: 'none',

@@ -31,7 +31,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { collection, getDocs, doc, getDoc, collectionGroup, deleteDoc, setDoc, serverTimestamp, query, where, getDocs as getDocsQuery } from 'firebase/firestore';
 import { ref, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
-import { useSchool } from '../contexts/SchoolContext';
 
 type Post = {
   id: number | string;
@@ -54,9 +53,7 @@ const PostDetail: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { currentSchool } = useSchool();
   const [post, setPost] = useState<Post | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
   const [userDisplayName, setUserDisplayName] = useState<string>('');
   const [profileUrl, setProfileUrl] = useState<string | undefined>(undefined);
@@ -162,7 +159,6 @@ const PostDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      setIsLoading(true);
       console.log('🔍 게시글 상세 정보 가져오기:', postId);
       
       try {
@@ -197,7 +193,7 @@ const PostDetail: React.FC = () => {
             const firebasePost: Post = {
               id: firebasePostId,
               title: data.title || '제목 없음',
-              school: (data as any).school || currentSchool || '한양여자대학교',
+              school: '한양여자대학교',
               major: `${data.category || ''} ${data.type || ''}`.trim() || '기타',
               price: Number(data.price) || 0,
               marketPrice: Number(data.price) || 0,
@@ -222,7 +218,6 @@ const PostDetail: React.FC = () => {
                   postTitle: data.title || '제목 없음',
                   postPrice: Number(data.price) || 0,
                   postCategory: `${data.category || ''} ${data.type || ''}`.trim() || '기타',
-                  school: (data as any).school || currentSchool || null,
                   viewedAt: serverTimestamp(),
                 }, { merge: true });
               }
@@ -356,8 +351,6 @@ const PostDetail: React.FC = () => {
         
       } catch (error) {
         console.error('게시글 가져오기 오류:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
     
@@ -440,7 +433,6 @@ const PostDetail: React.FC = () => {
             postPrice: post.price,
             postCategory: post.major,
             postImage: firstImage,
-            school: (post as any).school || currentSchool || null,
             createdAt: serverTimestamp(),
           });
           setIsLiked(true);
@@ -474,19 +466,6 @@ const PostDetail: React.FC = () => {
   //   navigate('/post/registration', { state: { editPost: post } });
   // };
 
-  if (isLoading) {
-    return (
-      <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
-        <Box display="flex" alignItems="center" mb={3}>
-          <IconButton onClick={() => navigate('/')}> <ArrowBackIcon /> </IconButton>
-          <Typography variant="h6" sx={{ ml: 1 }}>게시물 불러오는 중</Typography>
-          <Box flex={1} />
-          <CircularProgress size={20} />
-        </Box>
-      </Container>
-    );
-  }
-
   if (!post) {
     return (
       <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
@@ -511,7 +490,25 @@ const PostDetail: React.FC = () => {
   // 거래완료 표시 여부
   const isCompleted = (post as any).status === 'completed';
 
-  // 게시글이 없을 때 처리 (보호용, 위에서 이미 처리)
+  // 게시글이 없을 때 처리
+  if (!post) {
+    return (
+      <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0 }}>
+        <Box display="flex" alignItems="center" px={1.5} pt={2} pb={1}>
+          <IconButton onClick={() => navigate('/')}> <ArrowBackIcon /> </IconButton>
+          <Box flex={1} />
+        </Box>
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="50vh">
+          <Typography variant="h6" color="text.secondary" mb={2}>
+            게시글을 찾을 수 없습니다
+          </Typography>
+          <Button variant="contained" onClick={() => navigate('/')}>
+            홈으로 돌아가기
+          </Button>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0 }}>

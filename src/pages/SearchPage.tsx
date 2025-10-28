@@ -95,12 +95,7 @@ export default function SearchPage() {
 
   return (
     <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 8, position: 'relative' }}>
-      {/* 상단 바 (학교 선택 제거) */}
       <Box display="flex" alignItems="center" pt={3} pb={2} gap={1}>
-        <IconButton onClick={() => navigate(-1)}>
-          <ArrowBackIcon />
-        </IconButton>
-        <Box flex={1} />
       </Box>
       {/* 검색창 */}
       <Box display="flex" alignItems="center" gap={1} mb={2}>

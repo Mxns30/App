@@ -526,21 +526,6 @@ const HomePage: React.FC = () => {
           {currentSchool}
         </Typography>
         <Box flex={1} />
-        <IconButton
-          sx={{
-            bgcolor: '#fff',
-            color: '#1abc9c',
-            borderRadius: '999px',
-            width: 56,
-            height: 32,
-            boxShadow: 1,
-            border: '1px solid #e0e0e0',
-            '&:hover': { bgcolor: '#f0fdfa' }
-          }}
-          onClick={() => navigate('/search')}
-        >
-          <SearchIcon />
-        </IconButton>
       </Box>
 
       {/* 게시물 리스트 */}
