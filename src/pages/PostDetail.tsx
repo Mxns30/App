@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -52,8 +52,11 @@ type Post = {
 const PostDetail: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
+  const location = useLocation() as any;
+  const backTarget = location?.state?.from === '/search' ? '/search' : '/';
   const { currentUser } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
   const [userDisplayName, setUserDisplayName] = useState<string>('');
   const [profileUrl, setProfileUrl] = useState<string | undefined>(undefined);
@@ -101,12 +104,7 @@ const PostDetail: React.FC = () => {
     }
   };
 
-  // const handleDeleteClick = () => {
-  //   setActionSheetOpen(false);
-  //   setTimeout(() => {
-  //     setConfirmDeleteOpen(true);
-  //   }, 150);
-  // };
+
   const handleDeleteCancel = () => setConfirmDeleteOpen(false);
   const handleDeleteConfirm = async () => {
     setConfirmDeleteOpen(false);
@@ -159,6 +157,7 @@ const PostDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchPost = async () => {
+      setIsLoading(true);
       console.log('🔍 게시글 상세 정보 가져오기:', postId);
       
       try {
@@ -249,66 +248,7 @@ const PostDetail: React.FC = () => {
         
         // 샘플 데이터 (다른 사용자들이 올린 게시글처럼 처리)
         const samplePosts: Post[] = [
-          {
-            id: 1,
-            title: "MacBook Pro 13인치",
-            school: "한양여자대학교",
-            major: "전자제품 노트북",
-            price: 1200000,
-            marketPrice: 1500000,
-            isLiked: false,
-            image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
-            userId: "sample_user_1", // 다른 사용자로 변경
-            desc: "2023년 모델, 거의 새것입니다. 박스와 충전기 포함.",
-          },
-          {
-            id: 2,
-            title: "아이폰 14 Pro",
-            school: "한양여자대학교", 
-            major: "전자제품 스마트폰",
-            price: 800000,
-            marketPrice: 1000000,
-            isLiked: false,
-            image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500",
-            userId: "sample_user_2", // 다른 사용자로 변경
-            desc: "256GB, 딥퍼플 색상. 케이스와 액세서리 포함.",
-          },
-          {
-            id: 3,
-            title: "나이키 에어포스 1",
-            school: "한양여자대학교",
-            major: "패션 신발",
-            price: 80000,
-            marketPrice: 120000,
-            isLiked: false,
-            image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
-            userId: "sample_user_3", // 다른 사용자로 변경
-            desc: "화이트 컬러, 사이즈 250. 한 번만 신었습니다.",
-          },
-          {
-            id: 4,
-            title: "무지 후드티",
-            school: "한양여자대학교",
-            major: "패션 상의",
-            price: 15000,
-            marketPrice: 25000,
-            isLiked: false,
-            image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500",
-            userId: "sample_user_4", // 다른 사용자로 변경
-            desc: "블랙 컬러, M 사이즈. 깨끗한 상태입니다.",
-          },
-          {
-            id: 5,
-            title: "스타벅스 텀블러",
-            school: "한양여자대학교",
-            major: "생활용품 기타",
-            price: 20000,
-            marketPrice: 30000,
-            isLiked: false,
-            image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500",
-            userId: "sample_user_5", // 다른 사용자로 변경
-            desc: "500ml 용량, 보온/보냉 가능. 사용감 거의 없음.",
-          }
+          
         ];
         
         // 숫자 ID로 샘플 데이터에서 찾기
@@ -351,6 +291,8 @@ const PostDetail: React.FC = () => {
         
       } catch (error) {
         console.error('게시글 가져오기 오류:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -453,24 +395,24 @@ const PostDetail: React.FC = () => {
     localStorage.setItem('posts', JSON.stringify(updatedPosts));
   };
 
-  // const handleDelete = () => {
-  //   if (!post) return;
-  //   const updatedPosts = posts.filter(p => p.id !== post.id);
-  //   setPosts(updatedPosts);
-  //   localStorage.setItem('posts', JSON.stringify(updatedPosts));
-  //   navigate('/');
-  // };
-
-  // const handleEdit = () => {
-  //   if (!post) return;
-  //   navigate('/post/registration', { state: { editPost: post } });
-  // };
+  if (isLoading) {
+    return (
+      <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
+        <Box display="flex" alignItems="center" mb={3}>
+          <IconButton onClick={() => navigate(backTarget)}> <ArrowBackIcon /> </IconButton>
+          <Typography variant="h6" sx={{ ml: 1 }}>게시글 불러오는 중</Typography>
+          <Box flex={1} />
+          <CircularProgress size={20} />
+        </Box>
+      </Container>
+    );
+  }
 
   if (!post) {
     return (
       <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 8, pb: 8 }}>
         <Box display="flex" alignItems="center" mb={3}>
-          <IconButton onClick={() => navigate('/')}> <ArrowBackIcon /> </IconButton>
+          <IconButton onClick={() => navigate(backTarget)}> <ArrowBackIcon /> </IconButton>
           <Typography variant="h6" sx={{ ml: 1 }}>게시글을 찾을 수 없습니다</Typography>
         </Box>
       </Container>
@@ -490,31 +432,13 @@ const PostDetail: React.FC = () => {
   // 거래완료 표시 여부
   const isCompleted = (post as any).status === 'completed';
 
-  // 게시글이 없을 때 처리
-  if (!post) {
-    return (
-      <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0 }}>
-        <Box display="flex" alignItems="center" px={1.5} pt={2} pb={1}>
-          <IconButton onClick={() => navigate('/')}> <ArrowBackIcon /> </IconButton>
-          <Box flex={1} />
-        </Box>
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="50vh">
-          <Typography variant="h6" color="text.secondary" mb={2}>
-            게시글을 찾을 수 없습니다
-          </Typography>
-          <Button variant="contained" onClick={() => navigate('/')}>
-            홈으로 돌아가기
-          </Button>
-        </Box>
-      </Container>
-    );
-  }
+  // 게시글이 없을 때 처리 (보호용)
 
   return (
     <Container maxWidth="xs" sx={{ bgcolor: '#fafafa', minHeight: '100vh', pt: 0, pb: 0 }}>
       {/* 헤더 */}
       <Box display="flex" alignItems="center" px={1.5} pt={2} pb={1}>
-        <IconButton onClick={() => navigate('/')}> <ArrowBackIcon /> </IconButton>
+        <IconButton onClick={() => navigate(backTarget)}> <ArrowBackIcon /> </IconButton>
         <Box flex={1} />
         {(post.userId === myUid || post.userId === 'me') && (
           <>

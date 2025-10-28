@@ -19,11 +19,13 @@ export default function SearchPage() {
   // 상단 학교 선택 UI 제거, 필터는 currentSchool 사용
   const [firebasePosts, setFirebasePosts] = useState<any[]>([]);
   const [localPosts, setLocalPosts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Firebase에서 게시글 로드 (HomePage와 동일한 로직을 간략화하여 사용)
   useEffect(() => {
     const fetchFirebasePosts = async () => {
       try {
+        setIsLoading(true);
         const all: any[] = [];
         const userPostsRef = collectionGroup(db, 'userPosts');
         const snap = await getDocs(userPostsRef);
@@ -57,8 +59,10 @@ export default function SearchPage() {
         }
         const filtered = currentSchool ? all.filter(p => p.school === currentSchool) : all;
         setFirebasePosts(filtered);
+        setIsLoading(false);
       } catch (e) {
         console.error('검색용 Firebase 게시글 로드 실패', e);
+        setIsLoading(false);
       }
     };
     fetchFirebasePosts();
@@ -124,11 +128,14 @@ export default function SearchPage() {
       </Box>
       {/* 결과 리스트 */}
       <Box>
-        {filtered.length === 0 && (
+        {isLoading && (
+          <Typography color="text.secondary" align="center" mt={4}>잠시만 기다려주세요.</Typography>
+        )}
+        {!isLoading && filtered.length === 0 && (
           <Typography color="text.secondary" align="center" mt={4}>검색 결과가 없습니다.</Typography>
         )}
         {filtered.map((post: any) => (
-          <Card key={post.id} sx={{ display: 'flex', mb: 2, boxShadow: 0, cursor: 'pointer' }} onClick={() => navigate(`/post/${post.id}`)}>
+          <Card key={post.id} sx={{ display: 'flex', mb: 2, boxShadow: 0, cursor: 'pointer' }} onClick={() => navigate(`/post/${post.id}`, { state: { from: '/search' } })}>
             {post.image ? (
               <Box sx={{ width: 64, height: 64, borderRadius: 2, m: 1, overflow: 'hidden', bgcolor: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img src={post.image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />

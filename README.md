@@ -1,19 +1,19 @@
-# 졸작 프로젝트 - React + Firebase
+# 청춘마켓 (React + Firebase)
 
 ## 프로젝트 소개
-React와 Firebase를 활용한 웹 애플리케이션입니다.
+QR로 학교 범위를 설정하고, 같은 학교 사용자끼리 중고거래 게시글/채팅을 할 수 있는 PWA입니다.
 
 ## 기술 스택
-- **Frontend**: React, TypeScript
+- **Frontend**: React 18, TypeScript, React Router v6, MUI v5
 - **Backend**: Firebase (Firestore, Authentication, Storage)
-- **Styling**: CSS
+- **PWA**: manifest, service worker
 - **Build Tool**: Create React App
 
 ## 설치 및 실행
 
 ### 필수 요구사항
-- Node.js 16.0.0 이상
-- npm 또는 yarn
+- Node.js 16+ (권장 LTS)
+- npm
 
 ### 설치
 ```bash
@@ -27,32 +27,33 @@ npm start
 npm run build
 ```
 
-## 프로젝트 구조
+## 프로젝트 구조 (요약)
 ```
 src/
-├── components/     # 재사용 가능한 컴포넌트
-├── pages/         # 페이지 컴포넌트
-├── config/        # 설정 파일
-├── contexts/      # React Context
-├── hooks/         # Custom Hooks
-├── services/      # API 서비스
-├── types/         # TypeScript 타입 정의
-└── utils/         # 유틸리티 함수
+├── components/        # 공용 컴포넌트 (BottomNav, PostCard, auth/* 등)
+├── pages/             # 화면 (HomePage, SearchPage, PostDetail, chat/*, calendar/*)
+├── config/            # Firebase 초기화 등 설정 (firebase.ts)
+├── contexts/          # Auth, School(학교 스코프) 컨텍스트
+├── hooks/             # 커스텀 훅 (예: useUnreadChatCount)
+└── index.tsx, App.tsx # 진입/라우팅
 ```
 
-## 협업 가이드
-팀원들과의 협업을 위한 자세한 가이드는 [CONTRIBUTING.md](./CONTRIBUTING.md)를 참고하세요.
+## 주요 기능
+- QR 스캔으로 학교 스코프 설정(`SchoolContext`), 전역 필터 반영
+- 게시글: Firestore `posts/{userId}/userPosts` 저장 및 이미지 업로드(Storage)
+- 검색: `currentSchool` 기준으로 결과 필터, 로딩 상태 표시
+- 채팅: `chatRooms/*` + `chatRooms/{roomId}/messages/*`, 미확인 배지/읽음 처리, 거래완료 플로우
+- 하단 네비: 공용 `BottomNav`로 일관된 탭/배지 표시
 
-### 간단한 작업 흐름
-1. `main` 브랜치에서 작업 브랜치 생성
-2. 작업 및 커밋
-3. 원격에 푸시
-4. Pull Request 생성
-5. 코드 리뷰
-6. `main`에 머지
+## 개발/실행
+```bash
+npm install
+npm start      # http://localhost:3031 (package.json의 포트 설정 참고)
+npm run build
+```
 
-## 배포
-프로젝트 배포는 `blaze`를 사용합니다.
-
-## 라이선스
-이 프로젝트는 팀 내부용으로 제작되었습니다. 
+## 데이터 모델 (요약)
+- users/{uid}: userId, email, photoUrl, createdAt 등
+- posts/{userId}/userPosts/{postId}: title, price, category, type, description, school, createdAt, status
+- chatRooms/{roomId}: participants, participantNames, lastMessage, school, createdAt, updatedAt, status
+- chatRooms/{roomId}/messages/{messageId}: type(text/image), text, image, userId, userName, timestamp
