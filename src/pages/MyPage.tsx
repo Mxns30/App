@@ -155,9 +155,21 @@ const MyPage: React.FC = () => {
       const querySnapshot = await getDocs(viewedQuery);
 
       const viewed = await Promise.all(
-        querySnapshot.docs.map(async (doc) => {
-          const data = doc.data() as any;
+        querySnapshot.docs.map(async (docSnap) => {
+          const data = docSnap.data() as any;
           if (currentSchool && data.school !== currentSchool) return null;
+
+          try {
+            const postRef = doc(db, 'posts', data.sellerId, 'userPosts', data.postId);
+            const postDoc = await getDoc(postRef);
+            if (!postDoc.exists()) {
+              return null;
+            }
+          } catch (error) {
+            console.warn('최근 본 게시물 확인 중 오류:', error);
+            return null;
+          }
+
           const imageUrl = await getImageUrl(data.sellerId, data.postId);
           return {
             id: data.postId,
@@ -171,7 +183,8 @@ const MyPage: React.FC = () => {
         })
       );
 
-      setRecentlyViewed(viewed.filter(Boolean) as Post[]);
+      const filtered = (viewed.filter(Boolean) as Post[]).slice(0, 10);
+      setRecentlyViewed(filtered);
     } catch (err) {
       console.error('Error fetching recently viewed:', err);
       setError('최근 본 게시물을 불러오는 중 오류가 발생했습니다.');

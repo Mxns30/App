@@ -266,7 +266,7 @@ const CategoryPage: React.FC = () => {
           {selectedSeries && (
             <Box>
               <Typography fontWeight="bold" fontSize={16} mb={1}>
-                {selectedSeries} 카테고리
+                {selectedSeries}
               </Typography>
               <Box
                 sx={{

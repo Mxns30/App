@@ -12,7 +12,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Avatar from '@mui/material/Avatar';
 import BottomNav from '../components/BottomNav';
 import PetsIcon from '@mui/icons-material/Pets';
-import MenuIcon from '@mui/icons-material/Menu';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
@@ -521,12 +521,12 @@ const HomePage: React.FC = () => {
   }, [location?.state, allPosts, navigate]);
 
   const filteredPosts = React.useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
+    const term = searchTerm.trim();
     if (!term) return allPosts;
     return (allPosts as Post[]).filter((post) => {
-      const title = (post.title || '').toLowerCase();
-      const desc = (post.desc || '').toLowerCase();
-      const major = (post.major || '').toLowerCase();
+      const title = post.title || '';
+      const desc = post.desc || '';
+      const major = post.major || '';
       return title.includes(term) || desc.includes(term) || major.includes(term);
     });
   }, [allPosts, searchTerm]);
@@ -570,6 +570,9 @@ const HomePage: React.FC = () => {
                 bgcolor: '#fff',
                 px: 1.5,
                 py: 0.5,
+                '& fieldset': { borderColor: '#dfe7e3' },
+                '&:hover fieldset': { borderColor: '#cbd7d0' },
+                '&.Mui-focused fieldset': { borderColor: '#c0ccc5' },
               },
             }}
           />
@@ -634,14 +637,27 @@ const HomePage: React.FC = () => {
                       setMenuAnchorEl(e.currentTarget);
                       setMenuPostId(post.id);
                     }}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                    }}
                   >
-                    <MenuIcon />
+                    <MoreVertIcon 
+                      sx={{ 
+                        fontSize: 20,
+                        color: '#666'
+                      }} 
+                    />
                   </IconButton>
                 )}
                 {post.userId !== myUid && (
                   <IconButton
                     size="small"
                     onClick={e => { e.stopPropagation(); handleToggleLike(post.id); }}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                    }}
                   >
                     {(((post as any).isFirebasePost ? likedIds.has(post.id as any) : (post as any).isLiked)) ? (
                       <StarIcon 

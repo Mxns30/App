@@ -14,7 +14,7 @@ import {
   ArrowBack as ArrowBackIcon,
   Star as StarIcon,
   StarBorder as StarBorderIcon,
-  MoreVert as MoreVertIcon,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -446,7 +446,7 @@ const PostDetail: React.FC = () => {
         {(post.userId === myUid || post.userId === 'me') && (
           <>
             <IconButton onClick={handleMenuOpen} size="small">
-              <MoreVertIcon />
+              <MenuIcon />
             </IconButton>
             <EditDeleteActionSheet
               open={actionSheetOpen}
